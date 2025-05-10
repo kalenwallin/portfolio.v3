@@ -9,12 +9,12 @@ export default siteConfig({
   //rootNotionSpaceId: '53f2771d-9ff2-461a-961b-e6f42e86e679',
 
   // basic site info (required)
-  name: 'Church of Christ',
-  domain: 'churchofchrist.com',
-  author: 'Church of Christ',
+  name: 'Westside Church of Christ',
+  domain: 'imperialwestside.church',
+  author: 'Westside Church of Christ',
 
   // open graph metadata (optional)
-  description: "Imperial West side Church of Christ.",
+  description: "Westside Church of Christ - Imperial, Nebraska",
 
   // social usernames (optional)
   // twitter: 'transitive_bs',
