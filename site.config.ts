@@ -2,26 +2,26 @@ import { siteConfig } from './lib/site-config'
 
 export default siteConfig({
   // the site's root Notion page (required)
-  rootNotionPageId: '46511b6d397446e18aa16ebe85a40499',
+  rootNotionPageId: '1efb68b9ba54805f8155d0ffb5873eec',
 
   // if you want to restrict pages to a single notion workspace (optional)
   // (this should be a Notion ID; see the docs for how to extract this)
-  rootNotionSpaceId: 'cd70831b-555b-4b5b-8a91-01b5143fa3c2',
+  //rootNotionSpaceId: '53f2771d-9ff2-461a-961b-e6f42e86e679',
 
   // basic site info (required)
-  name: 'Portfolio.v3 ',
-  domain: 'kalenwallin.com',
-  author: 'Kalen Wallin',
+  name: 'Church of Christ',
+  domain: 'churchofchrist.com',
+  author: 'Church of Christ',
 
   // open graph metadata (optional)
-  description: "A showcase of my skills through experiences.",
+  description: "Imperial West side Church of Christ.",
 
   // social usernames (optional)
   // twitter: 'transitive_bs',
-  github: 'kalenwallin',
-  linkedin: 'kalenwallin',
+  // github: 'kalenwallin',
+  // linkedin: 'kalenwallin',
   // mastodon: '#', // optional mastodon profile URL, provides link verification
-  newsletter: 'mailto:kalenwallin1@gmail.com', // optional newsletter URL
+  // newsletter: 'mailto:kalenwallin1@gmail.com', // optional newsletter URL
   // youtube: '#', // optional youtube channel name or `channel/UCGbXXXXXXXXXXXXXXXXXXXXXX`
 
   // default notion icon and cover images for site-wide consistency (optional)
@@ -36,7 +36,7 @@ export default siteConfig({
   // whether or not redis is enabled for caching generated preview images (optional)
   // NOTE: if you enable redis, you need to set the `REDIS_HOST` and `REDIS_PASSWORD`
   // environment variables. see the readme for more info
-  isRedisEnabled: true,
+  isRedisEnabled: false,
 
   // map of notion page IDs to URL paths (optional)
   // any pages defined here will override their default URL paths
