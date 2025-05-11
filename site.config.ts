@@ -10,14 +10,14 @@ export default siteConfig({
 
   // basic site info (required)
   name: 'Westside Church of Christ',
-  domain: 'imperialwestside.church',
+  domain: 'imperial.church',
   author: 'Westside Church of Christ',
 
   // open graph metadata (optional)
-  description: "Westside Church of Christ - Imperial, Nebraska",
+  description: "Proclaiming Jesus Christ as Lord (Romans 10:9). Watch past sermons, grow in the Word, and join us in living out the Great Commission at the Westside Church of Christ in Imperial, Nebraska.",
 
   // social usernames (optional)
-  // twitter: 'transitive_bs',
+  // twitter: 'wallinkalen',
   // github: 'kalenwallin',
   // linkedin: 'kalenwallin',
   // mastodon: '#', // optional mastodon profile URL, provides link verification
