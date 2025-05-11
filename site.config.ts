@@ -14,7 +14,7 @@ export default siteConfig({
   author: 'Imperial, Nebraska',
 
   // open graph metadata (optional)
-  description: "Proclaiming Jesus Christ as Lord (Romans 10:9). Watch past sermons, grow in the Word, and join us in living out the Great Commission at the Westside Church of Christ in Imperial, Nebraska.",
+  description: "Proclaiming Jesus Christ as Lord (Romans 10:9). Watch past sermons, grow in the Word, and join us in living out the Great Commission.",
 
   // social usernames (optional)
   // twitter: 'wallinkalen',
