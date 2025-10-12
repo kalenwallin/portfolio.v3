@@ -33,7 +33,7 @@ const getNavigationLinkPages = pMemoize(
             signFileUrls: false
           }),
         {
-          concurrency: 1 // Reduced from 4 to 1 to avoid rate limiting
+          concurrency: 4
         }
       )
     }
@@ -43,15 +43,7 @@ const getNavigationLinkPages = pMemoize(
 )
 
 export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
-  let recordMap: ExtendedRecordMap
-  
-  try {
-    recordMap = await notion.getPage(pageId)
-  } catch (error: any) {
-    console.error(`Failed to fetch page ${pageId}:`, error.message)
-    // Re-throw with more context
-    throw new Error(`Error loading page "${pageId}": ${error.message}`)
-  }
+  let recordMap = await notion.getPage(pageId)
 
   if (navigationStyle !== 'default') {
     // ensure that any pages linked to in the custom navigation header have
@@ -62,7 +54,7 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     if (navigationLinkRecordMaps?.length) {
       recordMap = navigationLinkRecordMaps.reduce(
         (map, navigationLinkRecordMap) =>
-          mergeRecordMaps(map, navigationLinkRecordMap as any),
+          mergeRecordMaps(map, navigationLinkRecordMap),
         recordMap
       )
     }

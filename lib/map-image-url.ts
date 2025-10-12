@@ -8,5 +8,5 @@ export const mapImageUrl = (url: string | undefined, block: Block) => {
     return url
   }
 
-  return defaultMapImageUrl(url, block as any)
+  return defaultMapImageUrl(url, block)
 }

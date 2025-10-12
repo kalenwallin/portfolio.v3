@@ -27,15 +27,7 @@ const getAllPages = pMemoize(getAllPagesImpl, {
 
 const getPage = async (pageId: string, ...args) => {
   console.log('\nnotion getPage', uuidToId(pageId))
-  
-  try {
-    // Add a small delay to prevent rate limiting
-    await new Promise(resolve => setTimeout(resolve, 100))
-    return await notion.getPage(pageId, ...args)
-  } catch (error: any) {
-    console.error(`Failed to get page ${uuidToId(pageId)}:`, error.message)
-    throw error
-  }
+  return notion.getPage(pageId, ...args)
 }
 
 async function getAllPagesImpl(
@@ -45,7 +37,7 @@ async function getAllPagesImpl(
   const pageMap = await getAllPagesInSpace(
     rootNotionPageId,
     rootNotionSpaceId,
-    getPage as any // Type assertion to work around version mismatch
+    getPage
   )
 
   const canonicalPageMap = Object.keys(pageMap).reduce(
