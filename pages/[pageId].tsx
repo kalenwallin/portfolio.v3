@@ -57,7 +57,7 @@ export async function getStaticPaths() {
     return staticPaths
   } catch (error) {
     console.error('Error generating static paths:', error)
-    
+
     // Return minimal paths to prevent build failure
     // Pages will be generated on-demand with fallback: true
     return {
