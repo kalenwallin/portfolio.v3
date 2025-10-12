@@ -45,7 +45,7 @@ export class NotionAPI {
   public async getPage(
     pageId: string,
     {
-      concurrency = 3,
+      concurrency = 1, // Reduced from 3 to 1 to avoid rate limiting
       fetchMissingBlocks = true,
       fetchCollections = true,
       signFileUrls = true,
@@ -607,13 +607,35 @@ export class NotionAPI {
 
     const url = `${this._apiBaseUrl}/${endpoint}`
 
-    return ky
-      .post(url, {
-        ...this._kyOptions,
-        ...kyOptions,
-        json: body,
-        headers
+    try {
+      return await ky
+        .post(url, {
+          ...this._kyOptions,
+          ...kyOptions,
+          json: body,
+          headers,
+          timeout: 30000, // 30 second timeout
+          retry: {
+            limit: 3,
+            methods: ['post'],
+            statusCodes: [403, 408, 413, 429, 500, 502, 503, 504]
+          }
+        })
+        .json<T>()
+    } catch (error: any) {
+      console.error(`Notion API error for ${endpoint}:`, {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        message: error.message,
+        url
       })
-      .json<T>()
+      
+      // If it's a 403, provide more specific error information
+      if (error.response?.status === 403) {
+        throw new Error(`Notion API access forbidden (403). This may be due to authentication issues or the page being private. Endpoint: ${endpoint}`)
+      }
+      
+      throw error
+    }
   }
 }

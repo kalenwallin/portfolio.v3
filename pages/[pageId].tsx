@@ -18,7 +18,16 @@ export const getStaticProps: GetStaticProps<PageProps, Params> = async (
   } catch (err) {
     console.error('page error', domain, rawPageId, err)
 
-    // we don't want to publish the error version of this page, so
+    // If it's a 403 error or other API issue, return a fallback page instead of failing the build
+    if (err.message?.includes('403') || err.message?.includes('Forbidden')) {
+      console.warn(`Skipping page ${rawPageId} due to access restrictions`)
+      return {
+        notFound: true,
+        revalidate: 60 // Shorter revalidation for potentially temporary access issues
+      }
+    }
+
+    // For other errors, we don't want to publish the error version of this page, so
     // let next.js know explicitly that incremental SSG failed
     throw err
   }
@@ -32,20 +41,30 @@ export async function getStaticPaths() {
     }
   }
 
-  const siteMap = await getSiteMap()
+  try {
+    const siteMap = await getSiteMap()
 
-  const staticPaths = {
-    paths: Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
-      params: {
-        pageId
-      }
-    })),
-    // paths: [],
-    fallback: true
+    const staticPaths = {
+      paths: Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
+        params: {
+          pageId
+        }
+      })),
+      fallback: true // Changed to true to allow for ISR on missing pages
+    }
+
+    console.log(`Generated ${staticPaths.paths.length} static paths`)
+    return staticPaths
+  } catch (error) {
+    console.error('Error generating static paths:', error)
+    
+    // Return minimal paths to prevent build failure
+    // Pages will be generated on-demand with fallback: true
+    return {
+      paths: [],
+      fallback: true
+    }
   }
-
-  console.log(staticPaths.paths)
-  return staticPaths
 }
 
 export default function NotionDomainDynamicPage(props) {
