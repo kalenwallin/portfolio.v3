@@ -6,7 +6,7 @@ export default siteConfig({
 
   // if you want to restrict pages to a single notion workspace (optional)
   // (this should be a Notion ID; see the docs for how to extract this)
-  //rootNotionSpaceId: '53f2771d-9ff2-461a-961b-e6f42e86e679',
+  rootNotionSpaceId: '79017860-0134-40c2-905c-ad9f6bf48cae',
 
   // basic site info (required)
   name: 'Westside Church of Christ',
