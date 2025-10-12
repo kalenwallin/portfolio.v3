@@ -1,12 +1,4 @@
 {
-  "build": {
-    "env": {
-      "NOTION_API_BASE_URL": "@notion_api_base_url",
-      "REDIS_URL": "@redis_url",
-      "UPSTASH_REDIS_REST_TOKEN": "@upstash_redis_rest_token",
-      "UPSTASH_REDIS_REST_URL": "@upstash_redis_rest_url"
-    }
-  },
   "functions": {
     "pages/api/**.ts": {
       "maxDuration": 30
