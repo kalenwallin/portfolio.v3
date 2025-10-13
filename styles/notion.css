@@ -403,3 +403,57 @@
 .notion-equation.notion-equation-block{
   align-items: center;
 }
+
+.notion-collection-row-property:nth-child(n+4) {
+  display: none;
+}
+
+.dark-mode .notion-item-default {
+  --notion-item-default: #373737;
+  --notion-item-text-default: white;
+}
+
+.dark-mode .notion-item-green {
+  --notion-item-green: #2B593F;
+  --notion-item-text-green: white;
+}
+
+.dark-mode .notion-item-red {
+  --notion-item-red: #6E3530;
+  --notion-item-text-red: white;
+}
+
+.dark-mode .notion-item-purple {
+  --notion-item-purple: #492F64;
+  --notion-item-text-purple: white;
+}
+
+.dark-mode .notion-item-blue {
+  --notion-item-blue: #28456C;
+  --notion-item-text-blue: white;
+}
+
+.dark-mode .notion-item-gray {
+  --notion-item-gray: #5A5A5A;
+  --notion-item-text-gray: white;
+}
+
+.dark-mode .notion-item-pink {
+  --notion-item-pink: #69304C;
+  --notion-item-text-pink: white;
+}
+
+.dark-mode .notion-item-orange {
+  --notion-item-orange: #854C1D;
+  --notion-item-text-orange: white;
+}
+
+.dark-mode .notion-item-brown {
+  --notion-item-brown: #603B2C;
+  --notion-item-text-brown: white;
+}
+
+.dark-mode .notion-item-yellow {
+  --notion-item-yellow: #8A632A;
+  --notion-item-text-yellow: white;
+}
