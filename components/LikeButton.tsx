@@ -9,18 +9,22 @@ type LikeButtonProps = {
   title: string
 }
 
-const LikeButton: React.FC<LikeButtonProps> = ({ title }) => {
+type LikesResponse = {
+  likes: number
+}
+
+function LikeButton({ title }: LikeButtonProps) {
   const endpoint = 'https://likes.kalenwallin.workers.dev/'
   const [likes, setLikes] = useState(0)
   const [likeAdded, setLikeAdded] = useState(false)
 
   useEffect(() => {
-    loadLikes()
+    void loadLikes()
   })
 
   const loadLikes = async () => {
     const res = await fetch(`${endpoint}?title=${title}`)
-    const data = await res.json()
+    const data = (await res.json()) as LikesResponse
     setLikes(data.likes)
   }
 
@@ -35,7 +39,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ title }) => {
         body: JSON.stringify({ title })
       })
 
-      const data = await response.json()
+      const data = (await response.json()) as LikesResponse
       setLikes(data.likes)
       setLikeAdded(true)
     } else {
@@ -54,7 +58,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ title }) => {
         <button
           className={!likeAdded ? 'is-active' : ''}
           onClick={() => {
-            postLike()
+            void postLike()
           }}
         ></button>
       </div>
