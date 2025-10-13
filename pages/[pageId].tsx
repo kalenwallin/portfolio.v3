@@ -2,6 +2,7 @@ import { type GetStaticProps } from 'next'
 
 import { NotionPage } from '@/components/NotionPage'
 import { domain, isDev } from '@/lib/config'
+import { getSiteMap } from '@/lib/get-site-map'
 import { resolveNotionPage } from '@/lib/resolve-notion-page'
 import { type PageProps, type Params } from '@/lib/types'
 
@@ -31,13 +32,19 @@ export async function getStaticPaths() {
     }
   }
 
-  // Only pre-build the most important pages at build time
-  // Other pages will be generated on-demand (ISR)
+  const siteMap = await getSiteMap()
+
   const staticPaths = {
-    paths: [],
-    fallback: 'blocking'
+    paths: Object.keys(siteMap.canonicalPageMap).map((pageId) => ({
+      params: {
+        pageId
+      }
+    })),
+    // paths: [],
+    fallback: true
   }
 
+  console.log(staticPaths.paths)
   return staticPaths
 }
 
