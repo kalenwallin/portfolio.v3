@@ -1,10 +1,10 @@
 {
-  "name": "nextjs-notion-starter-kit",
-  "version": "2.0.0",
+  "name": "portfolio-v3",
+  "version": "2.0.1",
   "private": true,
-  "description": "The perfect starter kit for building beautiful websites with Next.js and Notion.",
-  "author": "Travis Fischer <travis@transitivebullsh.it>",
-  "repository": "transitive-bullshit/nextjs-notion-starter-kit",
+  "description": "Showcasing skills through jobs, projects, and blog posts.",
+  "author": "Kalen Wallin <kalenwallin1@gmail.com>",
+  "repository": "kalenwallin/portfolio.v3",
   "license": "MIT",
   "packageManager": "pnpm@10.29.3",
   "engines": {
@@ -31,6 +31,7 @@
     "@fisch0920/use-dark-mode": "^2.4.0",
     "@keyvhq/core": "^1.6.9",
     "@keyvhq/redis": "^1.6.10",
+    "@vercel/analytics": "^1.5.0",
     "classnames": "^2.5.1",
     "expiry-map": "^2.0.0",
     "fathom-client": "^3.4.1",
