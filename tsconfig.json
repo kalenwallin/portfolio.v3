@@ -1,4 +1,5 @@
 {
+  "extends": "@fisch0920/config/tsconfig-react",
   "compilerOptions": {
     "target": "es2017",
     "lib": [
@@ -35,6 +36,8 @@
       ]
     }
   },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "*.config.ts"],
+  "exclude": ["node_modules"]
   "exclude": [
     "node_modules"
   ],

@@ -6,12 +6,15 @@
       "request": "launch",
       "name": "next dev",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/next",
-      "runtimeArgs": ["dev"],
+      "runtimeArgs": [
+        "dev"
+      ],
       "cwd": "${workspaceFolder}",
-      "port": 3000,
       "smartStep": true,
       "console": "integratedTerminal",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "env": {
         "NODE_OPTIONS": "--inspect"
       }
@@ -20,7 +23,9 @@
       "type": "node",
       "request": "attach",
       "name": "Next.js App",
-      "skipFiles": ["<node_internals>/**"],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
       "port": 3000
     }
   ]

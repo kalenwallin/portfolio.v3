@@ -6,7 +6,7 @@ import { api } from './config'
 
 export const searchNotion = pMemoize(searchNotionImpl, {
   cacheKey: (args) => args[0]?.query,
-  cache: new ExpiryMap(10_000),
+  cache: new ExpiryMap(10_000)
 })
 
 async function searchNotionImpl(
@@ -29,5 +29,11 @@ async function searchNotionImpl(
       error.response = res
       throw error
     })
-    .then((res) => res.json())
+    .then((res) => res.json() as Promise<types.SearchResults>)
+
+  // return ky
+  //   .post(api.searchNotion, {
+  //     json: params
+  //   })
+  //   .json()
 }

@@ -5,30 +5,33 @@
  * for optional depenencies.
  */
 import { parsePageId } from 'notion-utils'
+import { type PostHogConfig } from 'posthog-js'
 
-import { getEnv, getSiteConfig } from './get-config-value'
-import { NavigationLink } from './site-config'
 import {
-  NavigationStyle,
-  PageUrlOverridesInverseMap,
-  PageUrlOverridesMap,
-  Site
+  getEnv,
+  getRequiredSiteConfig,
+  getSiteConfig
+} from './get-config-value'
+import { type NavigationLink } from './site-config'
+import {
+  type NavigationStyle,
+  type PageUrlOverridesInverseMap,
+  type PageUrlOverridesMap,
+  type Site
 } from './types'
 
 export const rootNotionPageId: string = parsePageId(
   getSiteConfig('rootNotionPageId'),
   { uuid: false }
-)
+)!
 
 if (!rootNotionPageId) {
   throw new Error('Config error invalid "rootNotionPageId"')
 }
 
 // if you want to restrict pages to a single notion workspace (optional)
-export const rootNotionSpaceId: string | null = parsePageId(
-  getSiteConfig('rootNotionSpaceId', null),
-  { uuid: true }
-)
+export const rootNotionSpaceId: string | null =
+  parsePageId(getSiteConfig('rootNotionSpaceId'), { uuid: true }) ?? null
 
 export const pageUrlOverrides = cleanPageUrlMap(
   getSiteConfig('pageUrlOverrides', {}) || {},
@@ -46,24 +49,24 @@ export const environment = process.env.NODE_ENV || 'development'
 export const isDev = environment === 'development'
 
 // general site config
-export const name: string = getSiteConfig('name')
-export const author: string = getSiteConfig('author')
-export const domain: string = getSiteConfig('domain')
+export const name: string = getRequiredSiteConfig('name')
+export const author: string = getRequiredSiteConfig('author')
+export const domain: string = getRequiredSiteConfig('domain')
 export const description: string = getSiteConfig('description', 'Notion Blog')
 export const language: string = getSiteConfig('language', 'en')
 
 // social accounts
-export const twitter: string | null = getSiteConfig('twitter', null)
-export const mastodon: string | null = getSiteConfig('mastodon', null)
-export const github: string | null = getSiteConfig('github', null)
-export const youtube: string | null = getSiteConfig('youtube', null)
-export const linkedin: string | null = getSiteConfig('linkedin', null)
-export const newsletter: string | null = getSiteConfig('newsletter', null)
-export const zhihu: string | null = getSiteConfig('zhihu', null)
+export const twitter: string | undefined = getSiteConfig('twitter')
+export const mastodon: string | undefined = getSiteConfig('mastodon')
+export const github: string | undefined = getSiteConfig('github')
+export const youtube: string | undefined = getSiteConfig('youtube')
+export const linkedin: string | undefined = getSiteConfig('linkedin')
+export const newsletter: string | undefined = getSiteConfig('newsletter')
+export const zhihu: string | undefined = getSiteConfig('zhihu')
 
-export const getMastodonHandle = (): string | null => {
+export const getMastodonHandle = (): string | undefined => {
   if (!mastodon) {
-    return null
+    return
   }
 
   // Since Mastodon is decentralized, handles include the instance domain name.
@@ -73,14 +76,10 @@ export const getMastodonHandle = (): string | null => {
 }
 
 // default notion values for site-wide consistency (optional; may be overridden on a per-page basis)
-export const defaultPageIcon: string | null = getSiteConfig(
-  'defaultPageIcon',
-  null
-)
-export const defaultPageCover: string | null = getSiteConfig(
-  'defaultPageCover',
-  null
-)
+export const defaultPageIcon: string | undefined =
+  getSiteConfig('defaultPageIcon')
+export const defaultPageCover: string | undefined =
+  getSiteConfig('defaultPageCover')
 export const defaultPageCoverPosition: number = getSiteConfig(
   'defaultPageCoverPosition',
   0.5
@@ -103,7 +102,7 @@ export const navigationStyle: NavigationStyle = getSiteConfig(
   'default'
 )
 
-export const navigationLinks: Array<NavigationLink | null> = getSiteConfig(
+export const navigationLinks: Array<NavigationLink | undefined> = getSiteConfig(
   'navigationLinks',
   null
 )
@@ -153,6 +152,18 @@ export const site: Site = {
   description
 }
 
+export const fathomId = isDev ? undefined : process.env.NEXT_PUBLIC_FATHOM_ID
+export const fathomConfig = fathomId
+  ? {
+      excludedDomains: ['localhost', 'localhost:3000']
+    }
+  : undefined
+
+export const posthogId = process.env.NEXT_PUBLIC_POSTHOG_ID
+export const posthogConfig: Partial<PostHogConfig> = {
+  api_host: 'https://app.posthog.com'
+}
+
 function cleanPageUrlMap(
   pageUrlMap: PageUrlOverridesMap,
   {
@@ -192,7 +203,7 @@ function invertPageUrlOverrides(
   pageUrlOverrides: PageUrlOverridesMap
 ): PageUrlOverridesInverseMap {
   return Object.keys(pageUrlOverrides).reduce((acc, uri) => {
-    const pageId = pageUrlOverrides[uri]
+    const pageId = pageUrlOverrides[uri]!
 
     return {
       ...acc,
