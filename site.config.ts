@@ -2,26 +2,26 @@ import { siteConfig } from './lib/site-config'
 
 export default siteConfig({
   // the site's root Notion page (required)
-  rootNotionPageId: '46511b6d397446e18aa16ebe85a40499',
+  rootNotionPageId: '1efb68b9ba54805f8155d0ffb5873eec',
 
   // if you want to restrict pages to a single notion workspace (optional)
   // (this should be a Notion ID; see the docs for how to extract this)
-  rootNotionSpaceId: null,
+  rootNotionSpaceId: '79017860-0134-40c2-905c-ad9f6bf48cae',
 
   // basic site info (required)
-  name: 'Portfolio.v3',
-  domain: 'kalenwallin.com',
-  author: 'Kalen Wallin',
+  name: 'Westside Church of Christ',
+  domain: 'imperial.church',
+  author: 'Imperial, Nebraska',
 
   // open graph metadata (optional)
-  description: 'Showcasing skills through jobs, projects, and blog posts.',
+  description: "Proclaiming Jesus Christ as Lord (Romans 10:9). Watch past sermons, grow in the Word, and join us in living out the Great Commission.",
 
   // social usernames (optional)
-  //twitter: 'kalenwallin',
-  linkedin: 'kalenwallin',
-  github: 'kalenwallin',
+  // twitter: 'wallinkalen',
+  // github: 'kalenwallin',
+  // linkedin: 'kalenwallin',
   // mastodon: '#', // optional mastodon profile URL, provides link verification
-  newsletter: 'mailto:kalenwallin1@gmail.com', // optional newsletter URL
+  // newsletter: 'mailto:kalenwallin1@gmail.com', // optional newsletter URL
   // youtube: '#', // optional youtube channel name or `channel/UCGbXXXXXXXXXXXXXXXXXXXXXX`
 
   // default notion icon and cover images for site-wide consistency (optional)
@@ -49,17 +49,8 @@ export default siteConfig({
   pageUrlOverrides: null,
 
   // whether to use the default notion navigation style or a custom one with links to
-  // important pages. To use `navigationLinks`, set `navigationStyle` to `custom`.
-  //navigationStyle: 'default'
+  // important pages
+  // navigationStyle: 'default',
   navigationStyle: 'custom',
-  // navigationLinks: [
-  //   {
-  //     title: 'About',
-  //     pageId: 'f1199d37579b41cbabfc0b5174f4256a'
-  //   },
-  //   {
-  //     title: 'Contact',
-  //     pageId: '6a29ebcb935a4f0689fe661ab5f3b8d1'
-  //   }
-  // ]
+  navigationLinks: []
 })
