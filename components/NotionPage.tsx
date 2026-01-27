@@ -1,6 +1,6 @@
 import cs from 'classnames'
 import dynamic from 'next/dynamic'
-import Image from 'next/legacy/image'
+import Image, { type ImageProps } from 'next/legacy/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { type PageBlock } from 'notion-types'
@@ -29,6 +29,18 @@ import { Page404 } from './Page404'
 import { PageAside } from './PageAside'
 import { PageHead } from './PageHead'
 import styles from './styles.module.css'
+
+/**
+ * Custom Image wrapper that disables optimization for GIF images.
+ * This prevents Next.js from cutting off GIF animations at ~3 seconds.
+ */
+function NotionImage(props: ImageProps) {
+  const { src, ...rest } = props
+  const srcString = typeof src === 'string' ? src : ''
+  const isGif = srcString.toLowerCase().includes('.gif')
+
+  return <Image src={src} unoptimized={isGif} {...rest} />
+}
 
 // -----------------------------------------------------------------------------
 // dynamic imports for optional components
@@ -193,7 +205,7 @@ export function NotionPage({
 
   const components = React.useMemo<Partial<NotionComponents>>(
     () => ({
-      nextLegacyImage: Image,
+      nextLegacyImage: NotionImage,
       nextLink: Link,
       Code,
       Collection,
@@ -278,8 +290,8 @@ export function NotionPage({
 
   const socialImage = mapImageUrl(
     getPageProperty<string>('Social Image', block, recordMap) ||
-    (block as PageBlock).format?.page_cover ||
-    config.defaultPageCover,
+      (block as PageBlock).format?.page_cover ||
+      config.defaultPageCover,
     block
   )
 
