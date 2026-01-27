@@ -457,3 +457,14 @@
   --notion-item-yellow: #8A632A;
   --notion-item-text-yellow: white;
 }
+
+/* Fix table overflow on mobile with inline code */
+.notion-simple-table {
+  max-width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+
+.notion-simple-table .notion-inline-code {
+  overflow-wrap: anywhere;
+}
