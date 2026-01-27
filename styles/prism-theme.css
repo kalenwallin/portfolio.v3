@@ -29,7 +29,7 @@
 
 .dark-mode .notion .notion-inline-code {
   background: rgb(71, 76, 80) !important;
-  color: #ff4081;
+  color: #f8d7da;
   padding: 0.2em 0.4em !important;
   border-radius: 0.25em;
   font-family: var(--code-font-family);
@@ -37,8 +37,8 @@
 }
 
 .notion .notion-inline-code {
-  color: #ff4081;
-  background: rgba(127, 122, 107, 0.1) !important;
+  color: #c7254e;
+  background: rgba(249, 242, 244, 0.9) !important;
   padding: 0.2em 0.4em !important;
   border-radius: 0.25em;
   font-family: var(--code-font-family);
