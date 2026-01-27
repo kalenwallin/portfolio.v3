@@ -31,13 +31,28 @@ import { PageHead } from './PageHead'
 import styles from './styles.module.css'
 
 /**
+ * Checks if a URL points to a GIF image by examining the file extension.
+ * Handles URLs with query strings and fragments properly.
+ */
+function isGifUrl(url: string): boolean {
+  try {
+    // Handle both absolute and relative URLs
+    const urlObj = new URL(url, 'http://placeholder.com')
+    return urlObj.pathname.toLowerCase().endsWith('.gif')
+  } catch {
+    // Fallback for malformed URLs: check if path ends with .gif
+    return url.toLowerCase().split(/[?#]/)[0]?.endsWith('.gif') ?? false
+  }
+}
+
+/**
  * Custom Image wrapper that disables optimization for GIF images.
  * This prevents Next.js from cutting off GIF animations at ~3 seconds.
  */
 function NotionImage(props: ImageProps) {
   const { src, ...rest } = props
   const srcString = typeof src === 'string' ? src : ''
-  const isGif = srcString.toLowerCase().includes('.gif')
+  const isGif = isGifUrl(srcString)
 
   return <Image src={src} unoptimized={isGif} {...rest} />
 }
