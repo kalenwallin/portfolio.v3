@@ -33,16 +33,32 @@ import styles from './styles.module.css'
 /**
  * Checks if a URL points to a GIF image by examining the file extension.
  * Handles URLs with query strings and fragments properly.
+ * Also detects GIFs in Notion proxy URLs where the original URL is encoded.
  */
 function isGifUrl(url: string): boolean {
+  const lowerUrl = url.toLowerCase()
+
+  // Check for URL-encoded .gif extension (e.g., in Notion proxy URLs)
+  // The Notion proxy encodes the original URL, so .gif becomes %2F...%2Fimage.gif
+  if (
+    lowerUrl.includes('.gif?') ||
+    lowerUrl.includes('.gif%') ||
+    lowerUrl.endsWith('.gif')
+  ) {
+    return true
+  }
+
   try {
-    // Use a well-known reserved domain for relative URL resolution
     const urlObj = new URL(url, 'https://example.com')
-    return urlObj.pathname.toLowerCase().endsWith('.gif')
+    // Check the pathname for .gif extension
+    if (urlObj.pathname.toLowerCase().endsWith('.gif')) {
+      return true
+    }
+    // Also check if the URL contains an encoded GIF URL (Notion proxy style)
+    const decodedPath = decodeURIComponent(urlObj.pathname)
+    return decodedPath.toLowerCase().endsWith('.gif')
   } catch {
-    // Fallback for malformed URLs: extract path and check extension
-    const pathPart = url.toLowerCase().split(/[?#]/)[0]
-    return pathPart?.endsWith('.gif') ?? false
+    return false
   }
 }
 
