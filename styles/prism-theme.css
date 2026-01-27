@@ -1,5 +1,10 @@
 /* prism theme adjustments */
 
+:root {
+  --code-font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
+    'Liberation Mono', monospace;
+}
+
 .notion-code {
   background-color: rgba(249, 250, 251, 1);
   border: 1px solid rgba(229, 231, 235, 1);
@@ -26,12 +31,18 @@
   background: rgb(71, 76, 80) !important;
   color: #ff4081;
   padding: 0.2em 0.4em !important;
+  border-radius: 0.25em;
+  font-family: var(--code-font-family);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .notion .notion-inline-code {
   color: #ff4081;
   background: rgba(127, 122, 107, 0.1) !important;
   padding: 0.2em 0.4em !important;
+  border-radius: 0.25em;
+  font-family: var(--code-font-family);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .token.cdata,
