@@ -36,12 +36,13 @@ import styles from './styles.module.css'
  */
 function isGifUrl(url: string): boolean {
   try {
-    // Handle both absolute and relative URLs
-    const urlObj = new URL(url, 'http://placeholder.com')
+    // Use a well-known reserved domain for relative URL resolution
+    const urlObj = new URL(url, 'https://example.com')
     return urlObj.pathname.toLowerCase().endsWith('.gif')
   } catch {
-    // Fallback for malformed URLs: check if path ends with .gif
-    return url.toLowerCase().split(/[?#]/)[0]?.endsWith('.gif') ?? false
+    // Fallback for malformed URLs: extract path and check extension
+    const pathPart = url.toLowerCase().split(/[?#]/)[0]
+    return pathPart?.endsWith('.gif') ?? false
   }
 }
 
