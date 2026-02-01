@@ -161,7 +161,7 @@ export async function getNotionPageInfo({
 
   const imageBlockUrl = mapImageUrl(
     getPageProperty<string>('Social Image', block, recordMap) ||
-      (block as PageBlock).format?.page_cover,
+    (block as PageBlock).format?.page_cover,
     block
   )
   const imageFallbackUrl = mapImageUrl(libConfig.defaultPageCover, block)
@@ -199,8 +199,8 @@ export async function getNotionPageInfo({
   const date =
     isBlogPost && datePublished
       ? `${datePublished.toLocaleString('en-US', {
-          month: 'long'
-        })} ${datePublished.getFullYear()}`
+        month: 'long'
+      })} ${datePublished.getFullYear()}`
       : undefined
   const detail = date || author || libConfig.domain
 
