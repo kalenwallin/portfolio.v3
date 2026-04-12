@@ -18,7 +18,6 @@ import {
   useNotionContext
 } from 'react-notion-x'
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
-import { useSearchParam } from 'react-use'
 import * as config from '@/lib/config'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
@@ -206,7 +205,7 @@ export function NotionPage({
   pageId
 }: types.PageProps) {
   const router = useRouter()
-  const lite = useSearchParam('lite')
+  const lite = typeof router.query.lite === 'string' ? router.query.lite : null
 
   // lite mode is for oembed
   const isLiteMode = lite === 'true'
