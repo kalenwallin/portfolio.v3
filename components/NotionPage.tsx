@@ -19,6 +19,7 @@ import {
 } from 'react-notion-x'
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import * as config from '@/lib/config'
+import { applyCollectionFilters } from '@/lib/filter-collection-view'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
 import { searchNotion } from '@/lib/search-notion'
@@ -200,7 +201,7 @@ const notionRendererComponents: Partial<NotionComponents> = {
 
 export function NotionPage({
   site,
-  recordMap,
+  recordMap: rawRecordMap,
   error,
   pageId
 }: types.PageProps) {
@@ -211,6 +212,13 @@ export function NotionPage({
   const isLiteMode = lite === 'true'
 
   const { isDarkMode } = useDarkMode()
+
+  // Apply collection view checkbox filters client-side since the
+  // Notion API no longer returns pre-filtered results per view.
+  const recordMap = React.useMemo(
+    () => (rawRecordMap ? applyCollectionFilters(rawRecordMap) : rawRecordMap),
+    [rawRecordMap]
+  )
 
   const siteMapPageUrl = React.useMemo(() => {
     const params: any = {}
