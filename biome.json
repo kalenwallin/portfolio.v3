@@ -78,6 +78,7 @@
       "pages/**",
       "styles/**",
       "*.ts",
+      "!next-env.d.ts",
       "*.js",
       "*.json",
       "*.css"
