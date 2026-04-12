@@ -1,3 +1,5 @@
+packages: []
+
 enablePrePostScripts: true
 
 minimumReleaseAge: 1440
