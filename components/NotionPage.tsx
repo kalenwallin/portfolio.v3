@@ -250,6 +250,18 @@ export function NotionPage({
     [block, recordMap, isBlogPost]
   )
 
+  // Auto-loop and autoplay embedded videos (e.g. webm demos)
+  React.useEffect(() => {
+    document
+      .querySelectorAll<HTMLVideoElement>('.notion-asset-wrapper-video video')
+      .forEach((v) => {
+        v.loop = true
+        v.muted = true
+        v.autoplay = true
+        v.play()
+      })
+  })
+
   if (router.isFallback) {
     return <Loading />
   }
