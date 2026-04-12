@@ -3,7 +3,7 @@ import type {
   SearchParams,
   SearchResults
 } from 'notion-types'
-import { mergeRecordMaps } from 'notion-utils'
+import { getBlockValue, mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
@@ -71,5 +71,35 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
 }
 
 export async function search(params: SearchParams): Promise<SearchResults> {
-  return notion.search(params)
+  const results = await notion.search(params)
+
+  // Normalize recordMap block entries to ensure they use the { value, role }
+  // wrapper format. The Notion API v3 may return blocks without this wrapper,
+  // but react-notion-x's SearchDialog accesses blocks via `.value` and expects it.
+  if (results.recordMap?.block) {
+    for (const [blockId, blockEntry] of Object.entries(
+      results.recordMap.block
+    )) {
+      const value = getBlockValue(blockEntry as any)
+      if (value) {
+        ;(results.recordMap.block as any)[blockId] = { value, role: 'reader' }
+      }
+    }
+  }
+
+  if (results.recordMap?.collection) {
+    for (const [collectionId, collectionEntry] of Object.entries(
+      results.recordMap.collection
+    )) {
+      const value = getBlockValue(collectionEntry as any)
+      if (value) {
+        ;(results.recordMap.collection as any)[collectionId] = {
+          value,
+          role: 'reader'
+        }
+      }
+    }
+  }
+
+  return results
 }
