@@ -1,12 +1,28 @@
 {
-  "extends": "@fisch0920/config/tsconfig-react",
   "compilerOptions": {
+    "module": "esnext",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "target": "es2022",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "noImplicitOverride": true,
     "baseUrl": ".",
     "paths": {
       "@/components/*": ["components/*"],
       "@/lib/*": ["lib/*"],
       "@/styles/*": ["styles/*"]
-    }
+    },
+    "incremental": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "*.config.ts"],
   "exclude": ["node_modules"]

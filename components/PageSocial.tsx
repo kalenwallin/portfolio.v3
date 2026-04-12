@@ -1,5 +1,5 @@
-import type * as React from 'react'
 import cs from 'classnames'
+import type * as React from 'react'
 
 import * as config from '@/lib/config'
 
@@ -12,7 +12,7 @@ interface SocialLink {
   href?: string
 }
 
-const socialLinks: SocialLink[] = [
+const socialLinks = [
   config.twitter && {
     name: 'twitter',
     href: `https://x.com/${config.twitter}`,
@@ -67,7 +67,7 @@ const socialLinks: SocialLink[] = [
       </svg>
     )
   }
-].filter(Boolean)
+].filter(Boolean) as SocialLink[]
 
 export function PageSocial() {
   return (

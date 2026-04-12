@@ -1,7 +1,7 @@
 import ky from 'ky'
-import { type NextApiRequest, type NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
-import { type PageBlock } from 'notion-types'
+import type { PageBlock } from 'notion-types'
 import {
   getBlockIcon,
   getBlockTitle,
@@ -15,7 +15,7 @@ import * as libConfig from '@/lib/config'
 import interSemiBoldFont from '@/lib/fonts/inter-semibold'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { notion } from '@/lib/notion-api'
-import { type NotionPageInfo, type PageError } from '@/lib/types'
+import type { NotionPageInfo, PageError } from '@/lib/types'
 
 export const runtime = 'edge'
 
@@ -99,7 +99,7 @@ export default async function OGImage(
           />
         )}
       </div>
-    ),
+    </div>,
     {
       width: 1200,
       height: 630,
@@ -161,7 +161,7 @@ export async function getNotionPageInfo({
 
   const imageBlockUrl = mapImageUrl(
     getPageProperty<string>('Social Image', block, recordMap) ||
-    (block as PageBlock).format?.page_cover,
+      (block as PageBlock).format?.page_cover,
     block
   )
   const imageFallbackUrl = mapImageUrl(libConfig.defaultPageCover, block)
@@ -199,8 +199,8 @@ export async function getNotionPageInfo({
   const date =
     isBlogPost && datePublished
       ? `${datePublished.toLocaleString('en-US', {
-        month: 'long'
-      })} ${datePublished.getFullYear()}`
+          month: 'long'
+        })} ${datePublished.getFullYear()}`
       : undefined
   const detail = date || author || libConfig.domain
 

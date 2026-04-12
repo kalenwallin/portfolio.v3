@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic'
 import Image from 'next/legacy/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { type PageBlock } from 'notion-types'
+import type { PageBlock } from 'notion-types'
 import {
   formatDate,
   getBlockTitle,
@@ -19,12 +19,11 @@ import {
 } from 'react-notion-x'
 import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
 import { useSearchParam } from 'react-use'
-
-import type * as types from '@/lib/types'
 import * as config from '@/lib/config'
 import { mapImageUrl } from '@/lib/map-image-url'
 import { getCanonicalPageUrl, mapPageUrl } from '@/lib/map-page-url'
 import { searchNotion } from '@/lib/search-notion'
+import type * as types from '@/lib/types'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
 import { Footer } from './Footer'
@@ -276,8 +275,8 @@ export function NotionPage({
 
   const socialImage = mapImageUrl(
     getPageProperty<string>('Social Image', block, recordMap) ||
-    (block as PageBlock).format?.page_cover ||
-    config.defaultPageCover,
+      (block as PageBlock).format?.page_cover ||
+      config.defaultPageCover,
     block
   )
 

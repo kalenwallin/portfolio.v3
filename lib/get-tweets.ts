@@ -1,11 +1,10 @@
-import { type ExtendedRecordMap } from 'notion-types'
+import type { ExtendedRecordMap } from 'notion-types'
 import { getPageTweetIds } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 import { getTweet as getTweetData, type Tweet } from 'react-tweet/api'
-
-import type { ExtendedTweetRecordMap } from './types'
 import { db } from './db'
+import type { ExtendedTweetRecordMap } from './types'
 
 export async function getTweetsMap(
   recordMap: ExtendedRecordMap

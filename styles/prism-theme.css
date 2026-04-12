@@ -1,8 +1,9 @@
 /* prism theme adjustments */
 
 :root {
-  --code-font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas,
-    'Liberation Mono', monospace;
+  --code-font-family:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
 }
 
 .notion-code {

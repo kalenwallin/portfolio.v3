@@ -5,19 +5,19 @@
  * for optional depenencies.
  */
 import { parsePageId } from 'notion-utils'
-import { type PostHogConfig } from 'posthog-js'
+import type { PostHogConfig } from 'posthog-js'
 
 import {
   getEnv,
   getRequiredSiteConfig,
   getSiteConfig
 } from './get-config-value'
-import { type NavigationLink } from './site-config'
-import {
-  type NavigationStyle,
-  type PageUrlOverridesInverseMap,
-  type PageUrlOverridesMap,
-  type Site
+import type { NavigationLink } from './site-config'
+import type {
+  NavigationStyle,
+  PageUrlOverridesInverseMap,
+  PageUrlOverridesMap,
+  Site
 } from './types'
 
 export const rootNotionPageId: string = parsePageId(

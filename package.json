@@ -23,9 +23,10 @@
     "deps:link:notion-utils": "pnpm link ../react-notion-x/packages/notion-utils",
     "deps:link:notion-client": "pnpm link ../react-notion-x/packages/notion-client",
     "deps:link:react-notion-x": "pnpm link ../react-notion-x/packages/react-notion-x",
+    "check": "biome check .",
+    "fix": "biome check --write .",
     "test": "run-p test:*",
-    "test:lint": "eslint .",
-    "test:prettier": "prettier '**/*.{js,jsx,ts,tsx}' --check"
+    "test:lint": "biome check ."
   },
   "dependencies": {
     "@fisch0920/use-dark-mode": "^2.4.0",
@@ -55,15 +56,13 @@
     "rss": "^1.2.2"
   },
   "devDependencies": {
-    "@fisch0920/config": "^1.4.0",
+    "@biomejs/biome": "^2.4.11",
     "@types/node": "^25.5.0",
     "@types/prismjs": "^1.26.5",
     "@types/react": "^19.2.14",
     "@types/react-body-classname": "^1.1.10",
     "@types/rss": "^0.0.32",
-    "eslint": "^9.39.2",
     "npm-run-all2": "^8.0.4",
-    "prettier": "^3.8.1",
     "typescript": "^5.9.3"
   },
   "overrides": {
@@ -71,14 +70,12 @@
       "keyv": "npm:@keyvhq/core@~1.6.6"
     }
   },
-  "prettier": "@fisch0920/config/prettier",
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "prettier --ignore-unknown --write",
-      "eslint --fix"
+      "biome check --write"
     ]
   }
 }

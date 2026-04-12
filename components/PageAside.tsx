@@ -1,4 +1,4 @@
-import { type Block, type ExtendedRecordMap } from 'notion-types'
+import type { Block, ExtendedRecordMap } from 'notion-types'
 
 import { getPageTweet } from '@/lib/get-page-tweet'
 

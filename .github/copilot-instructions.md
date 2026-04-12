@@ -1,0 +1,1 @@
+After making changes, run `pnpm check` and `pnpm fix` to ensure that the codebase adheres to the defined styles and standards.

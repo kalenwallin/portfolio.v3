@@ -1,7 +1,7 @@
-import {
-  type ExtendedRecordMap,
-  type SearchParams,
-  type SearchResults
+import type {
+  ExtendedRecordMap,
+  SearchParams,
+  SearchResults
 } from 'notion-types'
 import { mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
@@ -20,7 +20,7 @@ const getNavigationLinkPages = pMemoize(
   async (): Promise<ExtendedRecordMap[]> => {
     const navigationLinkPageIds = (navigationLinks || [])
       .map((link) => link?.pageId)
-      .filter(Boolean)
+      .filter((id): id is string => Boolean(id))
 
     if (navigationStyle !== 'default' && navigationLinkPageIds.length) {
       return pMap(

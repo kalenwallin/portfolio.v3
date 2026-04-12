@@ -400,11 +400,11 @@
   color: var(--fg-color-2);
 }
 
-.notion-equation.notion-equation-block{
+.notion-equation.notion-equation-block {
   align-items: center;
 }
 
-.notion-collection-row-property:nth-child(n+4) {
+.notion-collection-row-property:nth-child(n + 4) {
   display: none;
 }
 
@@ -414,47 +414,47 @@
 }
 
 .dark-mode .notion-item-green {
-  --notion-item-green: #2B593F;
+  --notion-item-green: #2b593f;
   --notion-item-text-green: white;
 }
 
 .dark-mode .notion-item-red {
-  --notion-item-red: #6E3530;
+  --notion-item-red: #6e3530;
   --notion-item-text-red: white;
 }
 
 .dark-mode .notion-item-purple {
-  --notion-item-purple: #492F64;
+  --notion-item-purple: #492f64;
   --notion-item-text-purple: white;
 }
 
 .dark-mode .notion-item-blue {
-  --notion-item-blue: #28456C;
+  --notion-item-blue: #28456c;
   --notion-item-text-blue: white;
 }
 
 .dark-mode .notion-item-gray {
-  --notion-item-gray: #5A5A5A;
+  --notion-item-gray: #5a5a5a;
   --notion-item-text-gray: white;
 }
 
 .dark-mode .notion-item-pink {
-  --notion-item-pink: #69304C;
+  --notion-item-pink: #69304c;
   --notion-item-text-pink: white;
 }
 
 .dark-mode .notion-item-orange {
-  --notion-item-orange: #854C1D;
+  --notion-item-orange: #854c1d;
   --notion-item-text-orange: white;
 }
 
 .dark-mode .notion-item-brown {
-  --notion-item-brown: #603B2C;
+  --notion-item-brown: #603b2c;
   --notion-item-text-brown: white;
 }
 
 .dark-mode .notion-item-yellow {
-  --notion-item-yellow: #8A632A;
+  --notion-item-yellow: #8a632a;
   --notion-item-text-yellow: white;
 }
 
