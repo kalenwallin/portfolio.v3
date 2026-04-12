@@ -41,6 +41,7 @@
 .notion-asset-wrapper-video > div,
 .notion-asset-wrapper-video video {
   width: 100% !important;
+  height: auto !important;
 }
 
 .notion-header .notion-nav-header {
