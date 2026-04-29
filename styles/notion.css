@@ -166,6 +166,11 @@
   text-align: center;
 }
 
+/* When tabs are active the title is rendered in pageHeader; hide the native h1. */
+.notion-page.index-page > h1.notion-title ~ h1.notion-title {
+  display: none;
+}
+
 .notion-collection-row {
   padding-bottom: 1em;
 }

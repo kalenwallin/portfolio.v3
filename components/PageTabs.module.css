@@ -1,0 +1,55 @@
+.tabs {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  width: 100%;
+  border-bottom: 2px solid var(--fg-color-0, rgba(55, 53, 47, 0.09));
+  margin: 0.5em 0 2em;
+  padding: 0 2px;
+}
+
+.tab {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.95em;
+  font-weight: 500;
+  padding: 0.6em 1.1em;
+  color: var(--fg-color-2, rgba(55, 53, 47, 0.65));
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition:
+    color 150ms ease,
+    border-color 150ms ease;
+  border-radius: 4px 4px 0 0;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--fg-color, rgb(55, 53, 47));
+  background: var(--fg-color-0, rgba(55, 53, 47, 0.04));
+}
+
+.tab.active {
+  color: var(--fg-color, rgb(55, 53, 47));
+  border-bottom-color: var(--fg-color, rgb(55, 53, 47));
+}
+
+:global(.dark-mode) .tabs {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+:global(.dark-mode) .tab {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+:global(.dark-mode) .tab:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+:global(.dark-mode) .tab.active {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom-color: rgba(255, 255, 255, 0.9);
+}
