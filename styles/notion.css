@@ -468,3 +468,67 @@
 .notion-simple-table .notion-inline-code {
   overflow-wrap: anywhere;
 }
+
+/* Replace the 📂 emoji in the GitHub link block with a GitHub icon. */
+.notion-block-95c85ee3b95943e498c5b102f27cdf1e {
+  font-size: 0;
+}
+
+.notion-block-95c85ee3b95943e498c5b102f27cdf1e .notion-link {
+  font-size: 1rem;
+}
+
+.notion-block-95c85ee3b95943e498c5b102f27cdf1e::before {
+  content: '';
+  display: inline-block;
+  height: 1.1rem;
+  width: 1.1rem;
+  margin-right: 0.3rem;
+  margin-top: -0.6rem;
+  vertical-align: middle;
+  background: url('/github_light.svg') center / contain no-repeat;
+}
+
+.dark-mode .notion-block-95c85ee3b95943e498c5b102f27cdf1e::before {
+  background-image: url('/github_dark.svg');
+}
+
+/* Replace the 🤝 emoji in the LinkedIn link block with a LinkedIn icon. */
+.notion-block-cd1d64a17b824a30876fb52caa766c74 {
+  font-size: 0;
+}
+
+.notion-block-cd1d64a17b824a30876fb52caa766c74 .notion-link {
+  font-size: 1rem;
+}
+
+.notion-block-cd1d64a17b824a30876fb52caa766c74::before {
+  content: '';
+  display: inline-block;
+  height: 1.1rem;
+  width: 1.1rem;
+  margin-right: 0.3rem;
+  margin-top: -0.6rem;
+  vertical-align: middle;
+  background: url('/linkedin.svg') center / contain no-repeat;
+}
+
+/* Replace the ✉️ emoji in the email link block with a Gmail icon. */
+.notion-block-20c3ee23b19848b49dd0a46df1cd2699 {
+  font-size: 0;
+}
+
+.notion-block-20c3ee23b19848b49dd0a46df1cd2699 .notion-link {
+  font-size: 1rem;
+}
+
+.notion-block-20c3ee23b19848b49dd0a46df1cd2699::before {
+  content: '';
+  display: inline-block;
+  height: 1.1rem;
+  width: 1.1rem;
+  margin-right: 0.3rem;
+  margin-top: -0.6rem;
+  vertical-align: middle;
+  background: url('/gmail.svg') center / contain no-repeat;
+}
