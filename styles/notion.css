@@ -532,3 +532,167 @@
   vertical-align: middle;
   background: url('/gmail.svg') center / contain no-repeat;
 }
+
+/* ── Career timeline ──────────────────────────────────────────────────────── */
+/*
+  Color palette:
+    --tl-spine:  spine line
+    --tl-year:   year label + year dot
+    --tl-month:  month label + bullet dot
+*/
+.notion-block-d52caa1b388749b9bc7466a825b47cfa {
+  overflow-x: visible;
+  border: none;
+  border-collapse: unset;
+  --tl-spine: #d6d6d6;
+  --tl-year: #5430B9;
+  --tl-month: #9a9a9a;
+}
+
+.dark-mode .notion-block-d52caa1b388749b9bc7466a825b47cfa {
+  --tl-spine: #494b56;
+  --tl-year: #d0bde2;
+  --tl-month: #959595;
+}
+
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tbody {
+  display: block;
+  position: relative;
+}
+
+/* Vertical spine */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tbody::before {
+  content: '';
+  position: absolute;
+  left: calc(50% - 1px);
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--tl-spine);
+}
+
+/* Hide header row */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr:first-child {
+  display: none !important;
+}
+
+/* Each timeline item */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr {
+  display: flex !important;
+  align-items: flex-start;
+  border: none !important;
+  background: none !important;
+  padding: 0 !important;
+  margin-bottom: 1.75rem;
+  position: relative;
+}
+
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr:last-child {
+  margin-bottom: 0;
+}
+
+/* Timeline node (year-header dot) */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr::before {
+  content: '';
+  position: absolute;
+  left: calc(50% - 5px);
+  top: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tl-year);
+  z-index: 1;
+}
+
+/* Year label / left column */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa td:first-child {
+  width: 50% !important;
+  min-width: unset !important;
+  border: none !important;
+  padding: 2px 16px 0 0 !important;
+  text-align: right;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: var(--tl-year);
+}
+
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+  td:first-child
+  .notion-simple-table-cell {
+  padding: 0 !important;
+}
+
+/* Month label (year-item rows use the left cell for month) */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-type='year-item']
+  td:first-child {
+  font-weight: 400;
+  color: var(--tl-month);
+  font-size: 0.8125rem;
+}
+
+/* Middle cell always empty — collapse it */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa td:nth-child(2) {
+  display: none !important;
+}
+
+/* Description / right column */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa td:last-child {
+  width: 50% !important;
+  border: none !important;
+  padding: 0 0 0 16px !important;
+}
+
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+  td:last-child
+  .notion-simple-table-cell {
+  padding: 0 !important;
+  line-height: 1.65;
+}
+
+/* Year label */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa .tl-year {
+  display: block;
+  line-height: 1.3;
+}
+
+/* After expansion: row spacing */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-type] {
+  margin-bottom: 0.4rem;
+}
+
+/* Year header row: no month/description, just the year label */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-type='year-header'] {
+  margin-bottom: 0.15rem;
+}
+
+/* Extra gap before each new year group */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+tr[data-tl-type='year-header']:not([data-tl-first]) {
+  margin-top: 1.5rem;
+}
+
+/* Bullet rows: smaller dot in month color */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+tr[data-tl-type='year-item']::before {
+  width: 6px;
+  height: 6px;
+  left: calc(50% - 3px);
+  top: 8px;
+  background: var(--tl-month);
+}
+
+/* Right-side items: swap column order and flip alignment */
+.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-side='right']
+  td:first-child {
+  order: 3;
+  text-align: left;
+  padding: 2px 0 0 16px !important;
+}
+
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+  tr[data-tl-side='right']
+  td:last-child {
+  order: 1;
+  text-align: right;
+  padding: 0 16px 0 0 !important;
+}

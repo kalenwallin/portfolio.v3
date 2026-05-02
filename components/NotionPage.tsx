@@ -203,6 +203,163 @@ function buildTabSections(
 }
 
 // -----------------------------------------------------------------------------
+// Career timeline expansion
+// Splits each year-row's description into per-bullet rows and shows month labels.
+// -----------------------------------------------------------------------------
+
+/**
+ * Splits the child nodes of a table cell into per-line arrays,
+ * treating '\n' in text nodes as line breaks, preserving element nodes whole.
+ */
+function splitCellIntoLines(cell: Element): Node[][] {
+  const lines: Node[][] = [[]]
+
+  for (const child of Array.from(cell.childNodes)) {
+    if (child.nodeType === Node.TEXT_NODE) {
+      const parts = (child.textContent ?? '').split('\n')
+      for (let i = 0; i < parts.length; i++) {
+        if (i > 0) lines.push([])
+        const part = parts[i]!
+        if (part) lines[lines.length - 1]!.push(document.createTextNode(part))
+      }
+    } else {
+      lines[lines.length - 1]!.push(child)
+    }
+  }
+
+  return lines.filter((l) => l.some((n) => (n.textContent ?? '').trim()))
+}
+
+/**
+ * Expands the career timeline table (Year | Month | Description) so each
+ * bullet pair becomes its own row. Month lines are read directly from the
+ * second column instead of being parsed from description text.
+ * Idempotent — guarded by `data-tl-expanded` on the table element.
+ */
+function expandCareerTimeline(): void {
+  const table = document.querySelector<HTMLTableElement>(
+    '.notion-block-d52caa1b388749b9bc7466a825b47cfa'
+  )
+  if (!table || table.dataset.tlExpanded) return
+  table.dataset.tlExpanded = '1'
+
+  const tbody = table.querySelector('tbody')
+  if (!tbody) return
+
+  const allRows = Array.from(tbody.querySelectorAll('tr'))
+  const headerRow = allRows[0]
+  const dataRows = allRows.slice(1)
+
+  const fragment = document.createDocumentFragment()
+  if (headerRow) fragment.appendChild(headerRow)
+
+  let isFirstDataRow = true
+  let sideIdx = 0
+
+  for (const row of dataRows) {
+    const tds = row.querySelectorAll('td')
+    const yearTd = tds[0]
+    const monthTd = tds[1]
+    const descTd = tds[2]
+
+    const yearText =
+      yearTd?.querySelector('.notion-simple-table-cell')?.textContent?.trim() ??
+      ''
+    const monthCell = monthTd?.querySelector('.notion-simple-table-cell')
+    const descCell = descTd?.querySelector('.notion-simple-table-cell')
+    if (!monthCell || !descCell) continue
+
+    // Split month column on newlines, strip leading "- "
+    const monthLines = (monthCell.textContent ?? '')
+      .split('\n')
+      .map((l) => l.replace(/^-\s*/, '').trim())
+      .filter(Boolean)
+
+    const descLines = splitCellIntoLines(descCell)
+
+    // Most recent first within each year
+    monthLines.reverse()
+    descLines.reverse()
+
+    const count = Math.max(monthLines.length, descLines.length)
+
+    // Year header row — just the year label, no month/description
+    const yearHeaderTr = document.createElement('tr')
+    yearHeaderTr.className = row.className
+    yearHeaderTr.dataset.tlType = 'year-header'
+    if (isFirstDataRow) yearHeaderTr.dataset.tlFirst = '1'
+
+    const yearHeaderTd = document.createElement('td')
+    yearHeaderTd.className = yearTd?.className ?? ''
+    const yearHeaderDiv = document.createElement('div')
+    yearHeaderDiv.className = 'notion-simple-table-cell'
+    const yearSpan = document.createElement('span')
+    yearSpan.className = 'tl-year'
+    yearSpan.textContent = yearText
+    yearHeaderDiv.appendChild(yearSpan)
+    yearHeaderTd.appendChild(yearHeaderDiv)
+
+    for (const tdSrc of [monthTd, descTd]) {
+      const emptyTd = document.createElement('td')
+      emptyTd.className = tdSrc?.className ?? ''
+      const emptyDiv = document.createElement('div')
+      emptyDiv.className = 'notion-simple-table-cell'
+      emptyTd.appendChild(emptyDiv)
+      yearHeaderTr.appendChild(emptyTd)
+    }
+    yearHeaderTr.insertBefore(yearHeaderTd, yearHeaderTr.firstChild)
+    fragment.appendChild(yearHeaderTr)
+
+    // One row per bullet
+    for (let i = 0; i < count; i++) {
+      const tr = document.createElement('tr')
+      tr.className = row.className
+      tr.dataset.tlType = 'year-item'
+      tr.dataset.tlSide = sideIdx % 2 === 0 ? 'left' : 'right'
+      sideIdx++
+
+      // Month in the left cell (same column as year)
+      const monthLeftTd = document.createElement('td')
+      monthLeftTd.className = yearTd?.className ?? ''
+      const monthLeftDiv = document.createElement('div')
+      monthLeftDiv.className = 'notion-simple-table-cell'
+      monthLeftDiv.textContent = monthLines[i] ?? ''
+      monthLeftTd.appendChild(monthLeftDiv)
+
+      // Empty middle cell (hidden via CSS)
+      const emptyMidTd = document.createElement('td')
+      emptyMidTd.className = monthTd?.className ?? ''
+      emptyMidTd.appendChild(document.createElement('div'))
+
+      // Description cell — strip leading "- " from first text node
+      const descNewTd = document.createElement('td')
+      descNewTd.className = descTd?.className ?? ''
+      const descDiv = document.createElement('div')
+      descDiv.className = 'notion-simple-table-cell'
+      const lineNodes = (descLines[i] ?? []).map((n) => n.cloneNode(true))
+      if (
+        lineNodes[0]?.nodeType === Node.TEXT_NODE &&
+        (lineNodes[0] as Text).data.startsWith('- ')
+      ) {
+        ;(lineNodes[0] as Text).data = (lineNodes[0] as Text).data.slice(2)
+      }
+      for (const node of lineNodes) descDiv.appendChild(node)
+      descNewTd.appendChild(descDiv)
+
+      tr.appendChild(monthLeftTd)
+      tr.appendChild(emptyMidTd)
+      tr.appendChild(descNewTd)
+      fragment.appendChild(tr)
+    }
+
+    isFirstDataRow = false
+  }
+
+  while (tbody.firstChild) tbody.removeChild(tbody.firstChild)
+  tbody.appendChild(fragment)
+}
+
+// -----------------------------------------------------------------------------
 // dynamic imports for optional components
 // -----------------------------------------------------------------------------
 
@@ -475,6 +632,11 @@ export function NotionPage({
         v.autoplay = true
         v.play()
       })
+  })
+
+  // Expand career timeline bullets into individual per-month rows
+  React.useEffect(() => {
+    expandCareerTimeline()
   })
 
   if (router.isFallback) {
