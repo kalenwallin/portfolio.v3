@@ -14,7 +14,7 @@ export default siteConfig({
   author: 'Kalen Wallin',
 
   // open graph metadata (optional)
-  description: 'Showcasing skills through jobs, projects, and blog posts.',
+  description: 'Showcasing skills through work, projects, and blog posts.',
 
   // social usernames (optional)
   //twitter: 'kalenwallin',

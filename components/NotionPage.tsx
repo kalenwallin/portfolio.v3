@@ -46,7 +46,7 @@ const COLLECTION_VIEW_TAB_MAP: Record<string, { id: string; label: string }> = {
   'Side Projects': { id: 'projects', label: 'Projects' },
   Talk: { id: 'talks', label: 'Talks' },
   School: { id: 'school', label: 'School' },
-  Work: { id: 'jobs', label: 'Jobs' }
+  Work: { id: 'work', label: 'Work' }
 }
 
 const ABOUT_TAB: Tab = { id: 'about', label: 'About' }
@@ -55,7 +55,7 @@ const ALL_TABS: Tab[] = [
   ABOUT_TAB,
   { id: 'featured', label: 'Featured' },
   { id: 'projects', label: 'Projects' },
-  { id: 'jobs', label: 'Jobs' },
+  { id: 'work', label: 'Work' },
   { id: 'blog', label: 'Blog' },
   { id: 'talks', label: 'Talks' },
   { id: 'school', label: 'School' }
