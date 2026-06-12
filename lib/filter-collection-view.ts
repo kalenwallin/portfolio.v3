@@ -216,20 +216,6 @@ export function applyCollectionFilters(
                 ? results.some(Boolean)
                 : results.every(Boolean)
 
-            if (!passes) {
-              console.debug(
-                `[collection-filter] excluding block ${id} from view ${viewId}`,
-                {
-                  filters: checkboxFilters.map((f) => ({
-                    prop: f.property,
-                    op: f.filter.operator,
-                    expects: filterExpectsChecked(f),
-                    actual: pageBlock?.properties?.[f.property]?.[0]?.[0]
-                  }))
-                }
-              )
-            }
-
             return passes
           })
         }
@@ -269,27 +255,6 @@ export function applyCollectionFilters(
 
       newViewMap[viewId] = newViewData
       mutated = true
-
-      console.debug(
-        `[collection-filter] view "${(view as any)?.name || viewId}"`,
-        {
-          filters: checkboxFilters.map((f) => ({
-            prop: f.property,
-            op: f.filter.operator,
-            rawValue: f.filter.value,
-            expects: filterExpectsChecked(f)
-          })),
-          logicalOp,
-          before:
-            viewData.collection_group_results?.blockIds?.length ??
-            viewData.blockIds?.length ??
-            '?',
-          after:
-            newViewData.collection_group_results?.blockIds?.length ??
-            newViewData.blockIds?.length ??
-            '?'
-        }
-      )
     }
 
     filteredCollectionQuery[collectionId] = newViewMap
