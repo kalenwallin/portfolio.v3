@@ -30,9 +30,6 @@ const getAllPages = pMemoize(getAllPagesImpl, {
 
 const getPage = async (pageId: string, opts?: any) => {
   return notion.getPage(pageId, {
-    kyOptions: {
-      timeout: 30_000
-    },
     ...opts
   })
 }
