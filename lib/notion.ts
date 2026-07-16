@@ -7,6 +7,7 @@ import { getBlockValue, mergeRecordMaps } from 'notion-utils'
 import pMap from 'p-map'
 import pMemoize from 'p-memoize'
 
+import { compactRecordMap } from './compact-record-map'
 import {
   isPreviewImageSupportEnabled,
   navigationLinks,
@@ -59,6 +60,8 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
       )
     }
   }
+
+  recordMap = compactRecordMap(recordMap)
 
   if (isPreviewImageSupportEnabled) {
     const previewImageMap = await getPreviewImageMap(recordMap)
