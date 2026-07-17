@@ -11,14 +11,14 @@ const uuid = !!includeNotionIdInUrls
 
 export const mapPageUrl =
   (site: Site, recordMap: ExtendedRecordMap, searchParams: URLSearchParams) =>
-  (pageId = '') => {
+  (pageId = '', pageRecordMap = recordMap) => {
     const pageUuid = parsePageId(pageId, { uuid: true })!
 
     if (uuidToId(pageUuid) === site.rootNotionPageId) {
       return createUrl('/', searchParams)
     } else {
       return createUrl(
-        `/${getCanonicalPageId(pageUuid, recordMap, { uuid })}`,
+        `/${getCanonicalPageId(pageUuid, pageRecordMap, { uuid })}`,
         searchParams
       )
     }
