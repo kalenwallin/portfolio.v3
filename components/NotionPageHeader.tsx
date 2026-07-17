@@ -1,9 +1,15 @@
 import cs from 'classnames'
 import type * as types from 'notion-types'
 import * as React from 'react'
-import { Breadcrumbs, Header, Search, useNotionContext } from 'react-notion-x'
+import { Header, Search, useNotionContext } from 'react-notion-x'
 
-import { isSearchEnabled, navigationLinks, navigationStyle } from '@/lib/config'
+import {
+  author,
+  isSearchEnabled,
+  navigationLinks,
+  navigationStyle,
+  rootNotionPageId
+} from '@/lib/config'
 import { MoonIcon } from '@/lib/icons/moon'
 import { SunIcon } from '@/lib/icons/sun'
 import { useDarkMode } from '@/lib/use-dark-mode'
@@ -46,7 +52,12 @@ export function NotionPageHeader({
   return (
     <header className='notion-header'>
       <div className='notion-nav-header'>
-        <Breadcrumbs block={block} rootOnly={true} />
+        <components.PageLink
+          href={mapPageUrl(rootNotionPageId)}
+          className={cs(styles.navLink, 'breadcrumb', 'button')}
+        >
+          {author}
+        </components.PageLink>
 
         <div className='notion-nav-header-rhs breadcrumbs'>
           {navigationLinks
