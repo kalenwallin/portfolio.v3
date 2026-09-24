@@ -7,6 +7,34 @@
  * places to add some flare.
  */
 
+/*
+  Mountain accent palette:
+    --accent-meadow:  alpine meadow green
+    --accent-glacier: glacier / sky blue
+    --accent-summit:  deep pine, used for strong accents (timeline years)
+*/
+:root {
+  --accent-meadow: #4f8a3c;
+  --accent-glacier: #2f7fb8;
+  --accent-summit: #2d5f4a;
+}
+
+.dark-mode {
+  --accent-meadow: #9cc47e;
+  --accent-glacier: #8cc8ec;
+  --accent-summit: #b3d6c2;
+}
+
+/* Re-declared under .dark-mode so it resolves against the dark palette */
+:root,
+.dark-mode {
+  --accent-gradient: linear-gradient(
+    90.68deg,
+    var(--accent-meadow) 0.26%,
+    var(--accent-glacier) 102.37%
+  );
+}
+
 .notion {
   --notion-max-width: 720px;
   --notion-header-height: 54px;
@@ -125,7 +153,7 @@
   line-height: 1.5;
   font-style: italic;
   font-size: 1.2em;
-  border-left: 4px solid #67bdfc;
+  border-left: 4px solid var(--accent-glacier);
 }
 
 .notion-h1,
@@ -237,7 +265,7 @@
 .notion-link:hover {
   border-bottom-color: transparent;
 
-  background-image: linear-gradient(90.68deg, #b439df 0.26%, #e5337e 102.37%);
+  background-image: var(--accent-gradient);
   background-repeat: no-repeat;
   background-position: 0 100%;
   background-size: 100% 0.1rem;
@@ -376,7 +404,7 @@
 }
 
 .notion-bookmark:hover {
-  border-image: linear-gradient(90.68deg, #b439df 0.26%, #e5337e 102.37%);
+  border-image: var(--accent-gradient);
   border-image-slice: 1;
 }
 
@@ -545,13 +573,13 @@
   border: none;
   border-collapse: unset;
   --tl-spine: #d6d6d6;
-  --tl-year: #5430b9;
+  --tl-year: var(--accent-summit);
   --tl-month: #9a9a9a;
 }
 
 .dark-mode .notion-block-d52caa1b388749b9bc7466a825b47cfa {
   --tl-spine: #494b56;
-  --tl-year: #d0bde2;
+  --tl-year: var(--accent-summit);
   --tl-month: #959595;
 }
 
@@ -623,7 +651,8 @@
 }
 
 /* Month label (year-item rows use the left cell for month) */
-.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-type='year-item']
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+  tr[data-tl-type='year-item']
   td:first-child {
   font-weight: 400;
   color: var(--tl-month);
@@ -667,13 +696,13 @@
 
 /* Extra gap before each new year group */
 .notion-block-d52caa1b388749b9bc7466a825b47cfa
-tr[data-tl-type='year-header']:not([data-tl-first]) {
+  tr[data-tl-type='year-header']:not([data-tl-first]) {
   margin-top: 1.5rem;
 }
 
 /* Bullet rows: smaller dot in month color */
 .notion-block-d52caa1b388749b9bc7466a825b47cfa
-tr[data-tl-type='year-item']::before {
+  tr[data-tl-type='year-item']::before {
   width: 6px;
   height: 6px;
   left: calc(50% - 3px);
@@ -682,7 +711,8 @@ tr[data-tl-type='year-item']::before {
 }
 
 /* Right-side items: swap column order and flip alignment */
-.notion-block-d52caa1b388749b9bc7466a825b47cfa tr[data-tl-side='right']
+.notion-block-d52caa1b388749b9bc7466a825b47cfa
+  tr[data-tl-side='right']
   td:first-child {
   order: 3;
   text-align: left;

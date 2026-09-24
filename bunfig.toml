@@ -1,0 +1,10 @@
+[install]
+# Only install package versions that have been published for at least 24 hours
+minimumReleaseAge = 86400
+minimumReleaseAgeExcludes = [
+  "@fisch0920/config",
+  "react-notion-x",
+  "notion-client",
+  "notion-types",
+  "notion-utils"
+]
