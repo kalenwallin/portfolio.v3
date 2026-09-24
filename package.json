@@ -8,7 +8,7 @@
   "repository": "kalenwallin/portfolio.v3",
   "type": "module",
   "scripts": {
-    "dev": "next dev --port 3005 --experimental-https",
+    "dev": "next dev --port 3005 --experimental-https --experimental-https-key certificates/dev-key.pem --experimental-https-cert certificates/dev.pem",
     "build": "next build",
     "start": "next start --port 3005",
     "deploy": "vercel deploy",

@@ -3,6 +3,7 @@
 
 export default {
   staticPageGenerationTimeout: 300,
+  allowedDevOrigins: ['100.72.51.81'],
   images: {
     unoptimized: true,
     remotePatterns: [
