@@ -3,7 +3,7 @@
 
 export default {
   staticPageGenerationTimeout: 300,
-  allowedDevOrigins: ['100.72.51.81'],
+  allowedDevOrigins: ['100.72.51.81', 'macbook-pro.tail22344d.ts.net'],
   images: {
     unoptimized: true,
     remotePatterns: [
