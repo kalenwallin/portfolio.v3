@@ -1,9 +1,13 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
+import { setTimeout as delay } from 'node:timers/promises'
+
+import { waitUntil } from '@vercel/functions'
 
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 // Notion signs the exact bytes it sends, so we need the raw request body
 export const config = {
+  maxDuration: 60,
   api: {
     bodyParser: false
   }
@@ -26,7 +30,12 @@ export default async function notionWebhook(
 
   const rawBody = await readRawBody(req)
 
-  let payload: { verification_token?: string; type?: string }
+  let payload: {
+    verification_token?: string
+    type?: string
+    id?: string
+    attempt_number?: number
+  }
   try {
     payload = JSON.parse(rawBody)
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -66,23 +75,55 @@ export default async function notionWebhook(
     return res.status(401).send({ error: 'invalid signature' })
   }
 
-  let deployRes: Response
-  try {
-    deployRes = await fetch(deployHookUrl, {
-      method: 'POST',
-      signal: AbortSignal.timeout(10_000)
-    })
-  } catch {
-    console.error('notion-webhook could not reach deploy hook')
-    return res.status(502).send({ error: 'failed to trigger deploy' })
-  }
-  if (!deployRes.ok) {
-    console.error('notion-webhook deploy hook failed', deployRes.status)
-    return res.status(502).send({ error: 'failed to trigger deploy' })
+  // The deploy hook takes longer than Notion's delivery timeout. Keep the
+  // function alive for background work while acknowledging Notion immediately.
+  waitUntil(triggerRebuild(deployHookUrl, payload.type, payload.id))
+  console.log(
+    'notion-webhook accepted event',
+    payload.type,
+    payload.id,
+    'delivery attempt',
+    payload.attempt_number
+  )
+  return res.status(200).send({ ok: true })
+}
+
+async function triggerRebuild(
+  deployHookUrl: string,
+  eventType?: string,
+  eventId?: string
+) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      const deployRes = await fetch(deployHookUrl, {
+        method: 'POST',
+        signal: AbortSignal.timeout(10_000)
+      })
+      if (deployRes.ok) {
+        console.log(
+          'notion-webhook triggered rebuild for event',
+          eventType,
+          eventId
+        )
+        return
+      }
+      console.error(
+        'notion-webhook deploy hook failed',
+        deployRes.status,
+        eventId
+      )
+    } catch {
+      console.error('notion-webhook could not reach deploy hook', eventId)
+    }
+
+    if (attempt < 3) await delay(attempt * 1000)
   }
 
-  console.log('notion-webhook triggered rebuild for event', payload.type)
-  res.status(200).send({ ok: true })
+  console.error(
+    'notion-webhook exhausted deploy hook retries',
+    eventType,
+    eventId
+  )
 }
 
 async function readRawBody(req: NextApiRequest): Promise<string> {

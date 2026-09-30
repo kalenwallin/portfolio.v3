@@ -30,6 +30,7 @@
     "@keyvhq/core": "^1.6.26",
     "@keyvhq/redis": "^1.6.28",
     "@vercel/analytics": "^1.6.1",
+    "@vercel/functions": "^3.9.9",
     "classnames": "^2.5.1",
     "expiry-map": "^2.0.0",
     "fathom-client": "^3.7.2",
