@@ -1,6 +1,6 @@
 import ky from 'ky'
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { ImageResponse } from 'next/og'
+import type { NextRequest } from 'next/server'
 import type { PageBlock } from 'notion-types'
 import {
   getBlockIcon,
@@ -19,11 +19,9 @@ import type { NotionPageInfo, PageError } from '@/lib/types'
 
 export const runtime = 'edge'
 
-export default async function OGImage(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const { searchParams } = new URL(req.url!)
+// Edge API routes receive a web Request, not NextApiRequest/NextApiResponse
+export default async function OGImage(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
   const pageId = parsePageId(
     searchParams.get('id') || libConfig.rootNotionPageId
   )
@@ -33,9 +31,10 @@ export default async function OGImage(
 
   const pageInfoOrError = await getNotionPageInfo({ pageId })
   if (pageInfoOrError.type === 'error') {
-    return res.status(pageInfoOrError.error.statusCode).send({
-      error: pageInfoOrError.error.message
-    })
+    return Response.json(
+      { error: pageInfoOrError.error.message },
+      { status: pageInfoOrError.error.statusCode }
+    )
   }
   const pageInfo = pageInfoOrError.data
 

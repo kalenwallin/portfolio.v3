@@ -34,8 +34,8 @@ export default siteConfig({
   isPreviewImageSupportEnabled: true,
 
   // whether or not redis is enabled for caching generated preview images (optional)
-  // NOTE: if you enable redis, you need to set the `REDIS_HOST` and `REDIS_PASSWORD`
-  // environment variables. see the readme for more info
+  // Set REDIS_ENABLED=true and REDIS_URL in Vercel Production/Preview to enable
+  // the shared cache there while keeping local development in memory.
   isRedisEnabled: false,
 
   // map of notion page IDs to URL paths (optional)

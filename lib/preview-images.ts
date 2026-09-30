@@ -55,7 +55,14 @@ async function createPreviewImage(
       console.warn(`redis error get "${cacheKey}"`, err.message)
     }
 
-    const body = await ky(url).arrayBuffer()
+    // Notion's image endpoint rejects the default Node User-Agent. Request the
+    // same public image a browser would load, including its full query string.
+    const body = await ky(url, {
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'
+      }
+    }).arrayBuffer()
     const result = await lqip(body)
 
     const previewImage = {

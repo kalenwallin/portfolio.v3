@@ -5,17 +5,34 @@ import { waitUntil } from '@vercel/functions'
 
 import type { NextApiRequest, NextApiResponse } from 'next'
 
+import { site } from '@/lib/config'
+import { mapPageUrl } from '@/lib/map-page-url'
+import { notion } from '@/lib/notion-api'
+
 // Notion signs the exact bytes it sends, so we need the raw request body
 export const config = {
-  maxDuration: 60,
+  // Room for a page revalidation that times out plus the rebuild fallback
+  maxDuration: 120,
   api: {
     bodyParser: false
   }
 }
 
+type NotionWebhookEvent = {
+  verification_token?: string
+  type?: string
+  id?: string
+  attempt_number?: number
+  entity?: { id?: string; type?: string }
+}
+
+const REVALIDATE_TIMEOUT_MS = 45_000
+const TIMED_OUT = Symbol('timed out')
+
 /**
- * Receives Notion webhook events and triggers a Vercel rebuild so that
- * statically generated pages pick up content changes.
+ * Receives Notion webhook events and refreshes the statically generated site:
+ * content edits to an existing page revalidate just that page, and everything
+ * else triggers a full Vercel rebuild.
  *
  * @see https://developers.notion.com/reference/webhooks
  */
@@ -30,12 +47,7 @@ export default async function notionWebhook(
 
   const rawBody = await readRawBody(req)
 
-  let payload: {
-    verification_token?: string
-    type?: string
-    id?: string
-    attempt_number?: number
-  }
+  let payload: NotionWebhookEvent
   try {
     payload = JSON.parse(rawBody)
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -75,9 +87,9 @@ export default async function notionWebhook(
     return res.status(401).send({ error: 'invalid signature' })
   }
 
-  // The deploy hook takes longer than Notion's delivery timeout. Keep the
-  // function alive for background work while acknowledging Notion immediately.
-  waitUntil(triggerRebuild(deployHookUrl, payload.type, payload.id))
+  // Revalidating or rebuilding takes longer than Notion's delivery timeout. Keep
+  // the function alive for background work while acknowledging Notion immediately.
+  waitUntil(refreshSite(res, deployHookUrl, payload))
   console.log(
     'notion-webhook accepted event',
     payload.type,
@@ -86,6 +98,64 @@ export default async function notionWebhook(
     payload.attempt_number
   )
   return res.status(200).send({ ok: true })
+}
+
+async function refreshSite(
+  res: NextApiResponse,
+  deployHookUrl: string,
+  payload: NotionWebhookEvent
+) {
+  // A content edit only changes that page's own route. New, moved, deleted, or
+  // retitled pages and database changes can change URLs and listings, so those
+  // rebuild. A page that isn't part of the current build (e.g. just created)
+  // 404s on revalidation, which also falls back to a rebuild.
+  const pageId = payload.entity?.type === 'page' ? payload.entity.id : undefined
+  if (
+    payload.type === 'page.content_updated' &&
+    pageId &&
+    (await revalidatePage(res, pageId, payload.id))
+  ) {
+    return
+  }
+
+  await triggerRebuild(deployHookUrl, payload.type, payload.id)
+}
+
+async function revalidatePage(
+  res: NextApiResponse,
+  pageId: string,
+  eventId?: string
+): Promise<boolean> {
+  let path: string | undefined
+
+  try {
+    // Resolve the URL the same way the build does, including custom slug
+    // properties from the page's database
+    const recordMap = await notion.getPage(pageId, {
+      signFileUrls: false,
+      ofetchOptions: { timeout: 15_000 }
+    })
+    path = mapPageUrl(site, recordMap, new URLSearchParams())(pageId)
+
+    const result = await Promise.race([
+      res.revalidate(path),
+      delay(REVALIDATE_TIMEOUT_MS, TIMED_OUT, { ref: false })
+    ])
+    if (result === TIMED_OUT) {
+      throw new Error(`timed out after ${REVALIDATE_TIMEOUT_MS}ms`)
+    }
+
+    console.log('notion-webhook revalidated', path, 'for event', eventId)
+    return true
+  } catch (err: any) {
+    console.warn(
+      'notion-webhook could not revalidate',
+      path ?? pageId,
+      err?.message,
+      '- falling back to rebuild'
+    )
+    return false
+  }
 }
 
 async function triggerRebuild(

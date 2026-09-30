@@ -5,7 +5,6 @@
  * for optional depenencies.
  */
 import { parsePageId } from 'notion-utils'
-import type { PostHogConfig } from 'posthog-js'
 
 import {
   getEnv,
@@ -114,19 +113,19 @@ export const isSearchEnabled: boolean = getSiteConfig('isSearchEnabled', true)
 
 // Optional redis instance for persisting preview images
 export const isRedisEnabled: boolean =
-  getSiteConfig('isRedisEnabled', false) || !!getEnv('REDIS_ENABLED', null)
+  getSiteConfig('isRedisEnabled', false) ||
+  getEnv('REDIS_ENABLED', null) === 'true'
 
-// (if you want to enable redis, only REDIS_HOST and REDIS_PASSWORD are required)
-// we recommend that you store these in a local `.env` file
-export const redisHost = getEnv('REDIS_HOST', isRedisEnabled ? undefined : null)
-export const redisPassword = getEnv(
-  'REDIS_PASSWORD',
-  isRedisEnabled ? undefined : null
-)
+// Prefer REDIS_URL (including Upstash's rediss:// TLS URL). Host/password are
+// only needed when constructing a URL instead of supplying one directly.
+export const redisHost = getEnv('REDIS_HOST', null)
+export const redisPassword = getEnv('REDIS_PASSWORD', null)
 export const redisUser: string = getEnv('REDIS_USER', 'default')
 export const redisUrl = getEnv(
   'REDIS_URL',
-  isRedisEnabled ? `redis://${redisUser}:${redisPassword}@${redisHost}` : null
+  redisHost && redisPassword
+    ? `redis://${redisUser}:${redisPassword}@${redisHost}`
+    : null
 )
 export const redisNamespace = getEnv('REDIS_NAMESPACE', 'preview-images')
 
@@ -156,18 +155,6 @@ export const site: Site = {
   rootNotionPageId,
   rootNotionSpaceId,
   description
-}
-
-export const fathomId = isDev ? undefined : process.env.NEXT_PUBLIC_FATHOM_ID
-export const fathomConfig = fathomId
-  ? {
-      excludedDomains: ['localhost', 'localhost:3000']
-    }
-  : undefined
-
-export const posthogId = process.env.NEXT_PUBLIC_POSTHOG_ID
-export const posthogConfig: Partial<PostHogConfig> = {
-  api_host: 'https://app.posthog.com'
 }
 
 function cleanPageUrlMap(

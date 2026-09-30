@@ -17,7 +17,7 @@ export default {
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;"
-  },
+  }
 
   // webpack: (config) => {
   //   // Workaround for ensuring that `react` and `react-dom` resolve correctly
@@ -30,8 +30,5 @@ export default {
   //     'node_modules/react-dom'
   //   )
   //   return config
-  // },
-
-  // See https://react-tweet.vercel.app/next#troubleshooting
-  transpilePackages: ['react-tweet']
+  // }
 }

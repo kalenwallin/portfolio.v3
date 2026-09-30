@@ -12,7 +12,6 @@ import {
   navigationLinks,
   navigationStyle
 } from './config'
-import { getTweetsMap } from './get-tweets'
 import { notion } from './notion-api'
 import { getPreviewImageMap } from './preview-images'
 
@@ -65,7 +64,12 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     ;(recordMap as any).preview_images = previewImageMap
   }
 
-  await getTweetsMap(recordMap)
+  // Notion's collaborative-editing data isn't used for rendering and accounts
+  // for a large share of the page props serialized into every page's HTML
+  for (const blockEntry of Object.values(recordMap.block)) {
+    const block = getBlockValue(blockEntry) as any
+    if (block) delete block.crdt_data
+  }
 
   return recordMap
 }

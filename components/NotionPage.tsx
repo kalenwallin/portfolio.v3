@@ -1,6 +1,6 @@
 import cs from 'classnames'
 import dynamic from 'next/dynamic'
-import Image from 'next/legacy/image'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import type { ExtendedRecordMap, PageBlock } from 'notion-types'
@@ -12,12 +12,7 @@ import {
 } from 'notion-utils'
 import * as React from 'react'
 import BodyClassName from 'react-body-classname'
-import {
-  type NotionComponents,
-  NotionRenderer,
-  useNotionContext
-} from 'react-notion-x'
-import { EmbeddedTweet, TweetNotFound, TweetSkeleton } from 'react-tweet'
+import { type NotionComponents, NotionRenderer } from 'react-notion-x'
 import * as config from '@/lib/config'
 import { applyCollectionFilters } from '@/lib/filter-collection-view'
 import { mapImageUrl } from '@/lib/map-image-url'
@@ -437,9 +432,6 @@ const Code = dynamic(() =>
 const Collection = dynamic(() =>
   import('react-notion-x/third-party/collection').then((m) => m.Collection)
 )
-const Equation = dynamic(() =>
-  import('react-notion-x/third-party/equation').then((m) => m.Equation)
-)
 const Pdf = dynamic(
   () => import('react-notion-x/third-party/pdf').then((m) => m.Pdf),
   {
@@ -456,17 +448,6 @@ const Modal = dynamic(
     ssr: false
   }
 )
-
-function Tweet({ id }: { id: string }) {
-  const { recordMap } = useNotionContext()
-  const tweet = (recordMap as types.ExtendedTweetRecordMap)?.tweets?.[id]
-
-  return (
-    <React.Suspense fallback={<TweetSkeleton />}>
-      {tweet ? <EmbeddedTweet tweet={tweet} /> : <TweetNotFound />}
-    </React.Suspense>
-  )
-}
 
 const propertyLastEditedTimeValue = (
   { block, pageHeader }: any,
@@ -510,14 +491,12 @@ const propertyTextValue = (
 }
 
 const notionRendererComponents: Partial<NotionComponents> = {
-  nextLegacyImage: Image,
+  nextImage: Image,
   nextLink: Link,
   Code,
   Collection,
-  Equation,
   Pdf,
   Modal,
-  Tweet,
   Header: NotionPageHeader,
   propertyLastEditedTimeValue,
   propertyTextValue,

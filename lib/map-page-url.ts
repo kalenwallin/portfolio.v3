@@ -11,14 +11,16 @@ const uuid = !!includeNotionIdInUrls
 
 export const mapPageUrl =
   (site: Site, recordMap: ExtendedRecordMap, searchParams: URLSearchParams) =>
-  (pageId = '') => {
+  // react-notion-x passes the search result's recordMap for search results,
+  // since those pages usually aren't in the current page's recordMap
+  (pageId = '', pageRecordMap: ExtendedRecordMap = recordMap) => {
     const pageUuid = parsePageId(pageId, { uuid: true })!
 
     if (uuidToId(pageUuid) === site.rootNotionPageId) {
       return createUrl('/', searchParams)
     } else {
       return createUrl(
-        `/${getCanonicalPageId(pageUuid, recordMap, { uuid })}`,
+        `/${getCanonicalPageId(pageUuid, pageRecordMap, { uuid })}`,
         searchParams
       )
     }
