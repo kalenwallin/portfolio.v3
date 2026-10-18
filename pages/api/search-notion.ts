@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { contentCache } from '../../lib/cache'
 import { search } from '../../lib/notion'
 import type * as types from '../../lib/types'
 
@@ -11,11 +12,21 @@ export default async function searchNotion(
   }
 
   const searchParams: types.SearchParams = req.body
-  const results = await search(searchParams)
+  if (
+    !searchParams ||
+    typeof searchParams !== 'object' ||
+    Array.isArray(searchParams) ||
+    typeof searchParams.query !== 'string' ||
+    typeof searchParams.ancestorId !== 'string'
+  ) {
+    return res.status(400).json({ error: 'invalid search parameters' })
+  }
 
-  res.setHeader(
-    'Cache-Control',
-    'public, s-maxage=60, max-age=60, stale-while-revalidate=60'
+  // Include every parameter (ancestor, filters, limit, session) in the key.
+  const results = await contentCache.get('search', searchParams, 120_000, () =>
+    search(searchParams)
   )
+
+  res.setHeader('Cache-Control', 'no-store')
   res.status(200).json(results)
 }

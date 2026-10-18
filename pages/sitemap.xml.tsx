@@ -1,7 +1,7 @@
 import type { GetServerSideProps } from 'next'
 import { host } from '@/lib/config'
-import { getSiteMap } from '@/lib/get-site-map'
-import type { SiteMap } from '@/lib/types'
+import { getSiteMetadata } from '@/lib/get-site-map'
+import type { SiteMetadata } from '@/lib/types'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   if (req.method !== 'GET') {
@@ -14,13 +14,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     }
   }
 
-  const siteMap = await getSiteMap()
+  const siteMap = await getSiteMetadata()
 
-  // cache for up to 8 hours
-  res.setHeader(
-    'Cache-Control',
-    'public, max-age=28800, stale-while-revalidate=28800'
-  )
+  res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
   res.setHeader('Content-Type', 'text/xml')
   res.write(createSitemap(siteMap))
   res.end()
@@ -30,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   }
 }
 
-const createSitemap = (siteMap: SiteMap) =>
+const createSitemap = (siteMap: SiteMetadata) =>
   `<?xml version="1.0" encoding="UTF-8"?>
   <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>

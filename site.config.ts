@@ -33,7 +33,7 @@ export default siteConfig({
   // whether or not to enable support for LQIP preview images (optional)
   isPreviewImageSupportEnabled: true,
 
-  // whether or not redis is enabled for caching generated preview images (optional)
+  // whether redis is enabled for shared caches and webhook coordination (optional)
   // Set REDIS_ENABLED=true and REDIS_URL in Vercel Production/Preview to enable
   // the shared cache there while keeping local development in memory.
   isRedisEnabled: false,

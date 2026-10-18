@@ -2,6 +2,7 @@ import type { ExtendedRecordMap } from 'notion-types'
 import { parsePageId } from 'notion-utils'
 import * as acl from './acl'
 import { environment, pageUrlAdditions, pageUrlOverrides, site } from './config'
+import { contentCache } from './cache'
 import { db } from './db'
 import { getSiteMap } from './get-site-map'
 import { getPage } from './notion'
@@ -29,10 +30,9 @@ export async function resolveNotionPage(
     }
 
     const useUriToPageIdCache = true
-    const cacheKey = `uri-to-page-id:${domain}:${environment}:${rawPageId}`
-    // TODO: should we use a TTL for these mappings or make them permanent?
-    // const cacheTTL = 8.64e7 // one day in milliseconds
-    const cacheTTL = undefined // disable cache TTL
+    const version = pageId ? 'resolved' : await contentCache.version()
+    const cacheKey = `uri-to-page-id:v2:${domain}:${environment}:${version}:${rawPageId}`
+    const cacheTTL = 300_000
 
     if (!pageId && useUriToPageIdCache) {
       try {

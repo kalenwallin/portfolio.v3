@@ -1,18 +1,9 @@
 import type { GetServerSideProps } from 'next'
-import type { ExtendedRecordMap } from 'notion-types'
-import {
-  getBlockParentPage,
-  getBlockTitle,
-  getBlockValue,
-  getPageProperty,
-  idToUuid
-} from 'notion-utils'
 import RSS from 'rss'
 
 import * as config from '@/lib/config'
-import { getSiteMap } from '@/lib/get-site-map'
+import { getSiteMetadata } from '@/lib/get-site-map'
 import { getSocialImageUrl } from '@/lib/get-social-image-url'
-import { getCanonicalPageUrl } from '@/lib/map-page-url'
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   if (req.method !== 'GET') {
@@ -23,9 +14,8 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     return { props: {} }
   }
 
-  const siteMap = await getSiteMap()
+  const metadata = await getSiteMetadata()
   const ttlMinutes = 24 * 60 // 24 hours
-  const ttlSeconds = ttlMinutes * 60
 
   const feed = new RSS({
     title: config.name,
@@ -35,35 +25,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     ttl: ttlMinutes
   })
 
-  for (const pagePath of Object.keys(siteMap.canonicalPageMap)) {
-    const pageId = siteMap.canonicalPageMap[pagePath]!
-    const recordMap = siteMap.pageMap[pageId] as ExtendedRecordMap
-    if (!recordMap) continue
-
-    const keys = Object.keys(recordMap?.block || {})
-    const block = getBlockValue(recordMap?.block?.[keys[0]!])
-    if (!block) continue
-
-    const parentPage = getBlockParentPage(block, recordMap)
-    const isBlogPost =
-      block.type === 'page' &&
-      block.parent_table === 'collection' &&
-      parentPage?.id === idToUuid(config.rootNotionPageId)
-    if (!isBlogPost) {
-      continue
-    }
-
-    const title = getBlockTitle(block, recordMap) || config.name
-    const description =
-      getPageProperty<string>('Description', block, recordMap) ||
-      config.description
-    const url = getCanonicalPageUrl(config.site, recordMap)(pageId)
-    const lastUpdatedTime = getPageProperty<number>(
-      'Last Updated',
-      block,
-      recordMap
-    )
-    const publishedTime = getPageProperty<number>('Published', block, recordMap)
+  for (const post of metadata.blogPosts) {
+    const { pageId, title, description, url, lastUpdatedTime, publishedTime } =
+      post
     const date = lastUpdatedTime
       ? new Date(lastUpdatedTime)
       : publishedTime
@@ -87,10 +51,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   const feedText = feed.xml({ indent: true })
 
-  res.setHeader(
-    'Cache-Control',
-    `public, max-age=${ttlSeconds}, stale-while-revalidate=${ttlSeconds}`
-  )
+  // Redis caches the metadata. Recheck it on each request so webhook invalidation
+  // isn't hidden behind a separate day-long browser/CDN cache.
+  res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate')
   res.setHeader('Content-Type', 'text/xml; charset=utf-8')
   res.write(feedText)
   res.end()

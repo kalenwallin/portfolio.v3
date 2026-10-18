@@ -1,0 +1,24 @@
+diff --git a/build/src-B3i0Klwz.js b/build/src-B3i0Klwz.js
+index 8731039fb87a0065ba934fd6f733207d569dbdab..1966bf9ae156d5d4d38a7afeb3502b6a99a76d73 100644
+--- a/build/src-B3i0Klwz.js
++++ b/build/src-B3i0Klwz.js
+@@ -1701,7 +1701,7 @@ var SearchDialog = class extends React.Component {
+ 					searchError: null
+ 				});
+ 				return;
+-			} else this._search();
++			} else this._search(query);
+ 		});
+ 		_defineProperty(this, "_onClearQuery", () => {
+ 			this._onChangeQuery({ target: { value: "" } });
+@@ -1713,9 +1713,8 @@ var SearchDialog = class extends React.Component {
+ 				ancestorId: rootBlockId
+ 			});
+ 		});
+-		_defineProperty(this, "_searchImpl", async () => {
++		_defineProperty(this, "_searchImpl", async (query = this.state.query) => {
+ 			const { searchNotion, rootBlockId } = this.props;
+-			const { query } = this.state;
+ 			if (!query.trim()) {
+ 				this.setState({
+ 					isLoading: false,

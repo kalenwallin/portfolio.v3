@@ -111,7 +111,7 @@ export const isSearchEnabled: boolean = getSiteConfig('isSearchEnabled', true)
 
 // ----------------------------------------------------------------------------
 
-// Optional redis instance for persisting preview images
+// Optional Redis instance for shared caches and webhook coordination
 export const isRedisEnabled: boolean =
   getSiteConfig('isRedisEnabled', false) ||
   getEnv('REDIS_ENABLED', null) === 'true'

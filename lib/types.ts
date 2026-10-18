@@ -46,6 +46,18 @@ export interface SiteMap {
   canonicalPageMap: CanonicalPageMap
 }
 
+export interface SiteMetadata {
+  canonicalPageMap: CanonicalPageMap
+  blogPosts: Array<{
+    pageId: string
+    title: string
+    description: string
+    url: string
+    lastUpdatedTime: number | null
+    publishedTime: number | null
+  }>
+}
+
 export interface CanonicalPageMap {
   [canonicalPageId: string]: string
 }

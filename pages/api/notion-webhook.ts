@@ -6,13 +6,15 @@ import { waitUntil } from '@vercel/functions'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { site } from '@/lib/config'
+import { contentCache } from '@/lib/cache'
 import { mapPageUrl } from '@/lib/map-page-url'
 import { notion } from '@/lib/notion-api'
+import { webhookCoordinator } from '@/lib/webhook-coordinator'
 
 // Notion signs the exact bytes it sends, so we need the raw request body
 export const config = {
-  // Room for a page revalidation that times out plus the rebuild fallback
-  maxDuration: 120,
+  // Room for cache coordination, page revalidation, and a batched rebuild fallback.
+  maxDuration: 180,
   api: {
     bodyParser: false
   }
@@ -87,9 +89,32 @@ export default async function notionWebhook(
     return res.status(401).send({ error: 'invalid signature' })
   }
 
+  const claim = await webhookCoordinator.claimEvent(payload.id)
+  if (claim.status === 'completed') {
+    return res.status(200).send({ ok: true })
+  }
+  if (claim.status === 'busy') {
+    // Do not acknowledge unfinished work as completed. If its owner fails,
+    // Notion can retry this delivery after the lease is released or expires.
+    res.setHeader('Retry-After', '5')
+    return res.status(503).send({ error: 'event is still being processed' })
+  }
+
   // Revalidating or rebuilding takes longer than Notion's delivery timeout. Keep
   // the function alive for background work while acknowledging Notion immediately.
-  waitUntil(refreshSite(res, deployHookUrl, payload))
+  waitUntil(
+    (async () => {
+      try {
+        await contentCache.invalidate()
+        await refreshSite(res, deployHookUrl, payload)
+        await claim.complete()
+      } catch (err: any) {
+        console.error('notion-webhook refresh failed', payload.id, err?.message)
+      } finally {
+        await claim.release()
+      }
+    })()
+  )
   console.log(
     'notion-webhook accepted event',
     payload.type,
@@ -118,7 +143,9 @@ async function refreshSite(
     return
   }
 
-  await triggerRebuild(deployHookUrl, payload.type, payload.id)
+  await webhookCoordinator.rebuild(() =>
+    triggerRebuild(deployHookUrl, payload.type, payload.id)
+  )
 }
 
 async function revalidatePage(
@@ -194,6 +221,7 @@ async function triggerRebuild(
     eventType,
     eventId
   )
+  throw new Error('Notion deploy hook failed after three attempts')
 }
 
 async function readRawBody(req: NextApiRequest): Promise<string> {

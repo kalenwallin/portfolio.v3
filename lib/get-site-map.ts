@@ -1,12 +1,18 @@
+import ExpiryMap from 'expiry-map'
 import {
   getAllPagesInSpace,
+  getBlockParentPage,
+  getBlockTitle,
   getBlockValue,
-  getPageProperty
+  getPageProperty,
+  idToUuid
 } from 'notion-utils'
 import pMemoize from 'p-memoize'
 import * as config from './config'
+import { contentCache } from './cache'
 import { includeNotionIdInUrls } from './config'
 import { getCanonicalPageId } from './get-canonical-page-id'
+import { getCanonicalPageUrl } from './map-page-url'
 import { notion } from './notion-api'
 import type * as types from './types'
 
@@ -15,7 +21,8 @@ const uuid = !!includeNotionIdInUrls
 export async function getSiteMap(): Promise<types.SiteMap> {
   const partialSiteMap = await getAllPages(
     config.rootNotionPageId,
-    config.rootNotionSpaceId ?? undefined
+    config.rootNotionSpaceId ?? undefined,
+    await contentCache.version()
   )
 
   return {
@@ -24,9 +31,64 @@ export async function getSiteMap(): Promise<types.SiteMap> {
   } as types.SiteMap
 }
 
-const getAllPages = pMemoize(getAllPagesImpl, {
-  cacheKey: (...args) => JSON.stringify(args)
-})
+// Keep large Notion records local and short lived. A webhook changes the version
+// on every instance, so a warm process cannot retain an obsolete sitemap.
+const getAllPages = pMemoize(
+  (root: string, space: string | undefined, _version: string) =>
+    getAllPagesImpl(root, space),
+  {
+    cache: new ExpiryMap(60_000),
+    cacheKey: (...args) => JSON.stringify(args)
+  }
+)
+
+export function getSiteMetadata(): Promise<types.SiteMetadata> {
+  return contentCache.get(
+    'site-metadata',
+    {
+      includeNotionIdInUrls,
+      pageUrlOverrides: config.pageUrlOverrides,
+      name: config.name,
+      description: config.description
+    },
+    300_000,
+    async () => {
+      const siteMap = await getSiteMap()
+      const blogPosts: types.SiteMetadata['blogPosts'] = []
+
+      for (const pageId of Object.values(siteMap.canonicalPageMap)) {
+        const recordMap = siteMap.pageMap[pageId]
+        if (!recordMap) continue
+        const rootKey = Object.keys(recordMap.block)[0]
+        const block = rootKey && getBlockValue(recordMap.block[rootKey])
+        if (!block) continue
+        const parent = getBlockParentPage(block, recordMap)
+        if (
+          block.type !== 'page' ||
+          block.parent_table !== 'collection' ||
+          parent?.id !== idToUuid(config.rootNotionPageId)
+        ) {
+          continue
+        }
+
+        blogPosts.push({
+          pageId,
+          title: getBlockTitle(block, recordMap) || config.name,
+          description:
+            getPageProperty<string>('Description', block, recordMap) ||
+            config.description,
+          url: getCanonicalPageUrl(config.site, recordMap)(pageId),
+          lastUpdatedTime:
+            getPageProperty<number>('Last Updated', block, recordMap) ?? null,
+          publishedTime:
+            getPageProperty<number>('Published', block, recordMap) ?? null
+        })
+      }
+
+      return { canonicalPageMap: siteMap.canonicalPageMap, blogPosts }
+    }
+  )
+}
 
 const getPage = async (pageId: string, opts?: any) => {
   return notion.getPage(pageId, {
