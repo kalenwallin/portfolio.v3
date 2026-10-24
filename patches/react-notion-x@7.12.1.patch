@@ -1,8 +1,25 @@
 diff --git a/build/src-B3i0Klwz.js b/build/src-B3i0Klwz.js
-index 8731039fb87a0065ba934fd6f733207d569dbdab..1966bf9ae156d5d4d38a7afeb3502b6a99a76d73 100644
+index 8731039fb87a0065ba934fd6f733207d569dbdab..c7c4ea840770bce49c83e7230e413a26af6da006 100644
 --- a/build/src-B3i0Klwz.js
 +++ b/build/src-B3i0Klwz.js
-@@ -1701,7 +1701,7 @@ var SearchDialog = class extends React.Component {
+@@ -586,9 +586,15 @@ function Asset({ block, zoomable = true, children }) {
+ 	} else if (block.type === "embed" || block.type === "video" || block.type === "figma" || block.type === "typeform" || block.type === "gist" || block.type === "maps" || block.type === "excalidraw" || block.type === "codepen" || block.type === "drive" || block.type === "replit") {
+ 		if (block.type === "video" && source && !source.includes("youtube") && !source.includes("youtu.be") && !source.includes("vimeo") && !source.includes("wistia") && !source.includes("loom") && !source.includes("videoask") && !source.includes("getcloudapp") && !source.includes("tella")) {
+ 			style.paddingBottom = void 0;
++			// WebM clips stand in for GIFs, so play them like one. Check the original
++			// file name, since uploads render through a signing route without one.
++			const isWebm = /\.webm(?:$|[?#])/i.test(block.properties?.source?.[0]?.[0] ?? "");
+ 			content = /* @__PURE__ */ jsx("video", {
+ 				playsInline: true,
+-				controls: true,
++				controls: !isWebm,
++				autoPlay: isWebm,
++				loop: isWebm,
++				muted: isWebm,
+ 				preload: "metadata",
+ 				style: assetStyle,
+ 				src: source,
+@@ -1701,7 +1707,7 @@ var SearchDialog = class extends React.Component {
  					searchError: null
  				});
  				return;
@@ -11,7 +28,7 @@ index 8731039fb87a0065ba934fd6f733207d569dbdab..1966bf9ae156d5d4d38a7afeb3502b6a
  		});
  		_defineProperty(this, "_onClearQuery", () => {
  			this._onChangeQuery({ target: { value: "" } });
-@@ -1713,9 +1713,8 @@ var SearchDialog = class extends React.Component {
+@@ -1713,9 +1719,8 @@ var SearchDialog = class extends React.Component {
  				ancestorId: rootBlockId
  			});
  		});

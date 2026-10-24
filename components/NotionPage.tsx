@@ -21,6 +21,7 @@ import { searchNotion } from '@/lib/search-notion'
 import type * as types from '@/lib/types'
 import { useDarkMode } from '@/lib/use-dark-mode'
 
+import { CollapsiblePreamble } from './CollapsiblePreamble'
 import { Footer } from './Footer'
 import { Loading } from './Loading'
 import { NotionPageHeader } from './NotionPageHeader'
@@ -55,6 +56,9 @@ const ALL_TABS: Tab[] = [
   { id: 'talks', label: 'Talks' },
   { id: 'school', label: 'School' }
 ]
+
+// Tabs whose intro paragraph collapses on narrower screens
+const COLLAPSIBLE_PREAMBLE_TABS = new Set(['work', 'talks'])
 
 /** Returns a copy of recordMap with the root block's content replaced. */
 function sliceRecordMap(
@@ -573,6 +577,17 @@ export function NotionPage({
     ])
   }, [isRootPage, tabSections, recordMap, activeTab])
 
+  // The active tab's intro paragraph, if it collapses on narrower screens
+  const preambleId = React.useMemo(() => {
+    if (!COLLAPSIBLE_PREAMBLE_TABS.has(activeTab)) return undefined
+    return tabSections?.collectionViewBlocks
+      .find((b) => b.tabId === activeTab)
+      ?.leaderBlockIds.find((id) => {
+        const leader = getBlockValue(recordMap?.block[id]) as any
+        return leader?.type === 'text' && leader.properties?.title
+      })
+  }, [activeTab, tabSections, recordMap])
+
   const siteMapPageUrl = React.useMemo(() => {
     const params: any = {}
     if (lite) params.lite = lite
@@ -703,6 +718,10 @@ export function NotionPage({
         pageTitle={isRootPage && tabSections ? null : undefined}
         footer={<Footer />}
       />
+
+      {preambleId && (
+        <CollapsiblePreamble key={preambleId} blockId={preambleId} />
+      )}
     </>
   )
 }

@@ -12,6 +12,8 @@ import pMemoize from 'p-memoize'
 import { defaultPageCover, defaultPageIcon } from './config'
 import { db } from './db'
 import { mapImageUrl } from './map-image-url'
+import { getNotionFileBlockId } from './notion-file-url'
+import { getSignedFile } from './notion-files'
 
 export async function getPreviewImageMap(
   recordMap: ExtendedRecordMap
@@ -55,9 +57,15 @@ async function createPreviewImage(
       console.warn(`redis error get "${cacheKey}"`, err.message)
     }
 
+    // Sign route-served uploads here rather than requesting the route, which
+    // may not be deployed yet while this build runs
+    const blockId = getNotionFileBlockId(url)
+    const fileUrl = blockId ? (await getSignedFile(blockId))?.url : url
+    if (!fileUrl) throw new Error('file not found')
+
     // Notion's image endpoint rejects the default Node User-Agent. Request the
     // same public image a browser would load, including its full query string.
-    const body = await ky(url, {
+    const body = await ky(fileUrl, {
       headers: {
         'User-Agent':
           'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36'

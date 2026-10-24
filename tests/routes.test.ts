@@ -13,6 +13,7 @@ import { contentCache } from '../lib/cache'
 import { rootNotionPageId } from '../lib/config'
 import { getSiteMetadata } from '../lib/get-site-map'
 import { notion } from '../lib/notion-api'
+import notionFile from '../pages/api/notion-file/[...path]'
 import webhook from '../pages/api/notion-webhook'
 import search from '../pages/api/search-notion'
 import { getServerSideProps as feed } from '../pages/feed'
@@ -37,6 +38,11 @@ class Response {
   }
   send(value: unknown) {
     this.body = value
+    return this
+  }
+  redirect(status: number, url: string) {
+    this.statusCode = status
+    this.headers.set('Location', url)
     return this
   }
   write(value: string) {
@@ -249,5 +255,99 @@ test('signed webhook acknowledges promptly, retries unfinished work, and skips c
     if (originalContext)
       Object.defineProperty(globalThis, symbol, originalContext)
     else Reflect.deleteProperty(globalThis, symbol)
+  }
+})
+
+test("file route redirects to a reused signed URL for this site's uploads only", async () => {
+  const originalGetBlocks = notion.getBlocks
+  const originalGetSignedFileUrls = notion.getSignedFileUrls
+  const spaceId = '20000000-0000-4000-8000-000000000001'
+  const rootId = idToUuid(rootNotionPageId)
+  const videoId = '20000000-0000-4000-8000-000000000002'
+  const foreignVideoId = '20000000-0000-4000-8000-000000000003'
+  const gifId = '20000000-0000-4000-8000-000000000004'
+  const coverPageId = '20000000-0000-4000-8000-000000000005'
+  const externalCoverPageId = '20000000-0000-4000-8000-000000000006'
+  const blocks: Record<string, unknown> = {
+    [rootId]: { id: rootId, type: 'page', space_id: spaceId },
+    [videoId]: {
+      id: videoId,
+      type: 'video',
+      space_id: spaceId,
+      properties: { source: [['attachment:file:clip.webm']] }
+    },
+    [foreignVideoId]: {
+      id: foreignVideoId,
+      type: 'video',
+      space_id: '20000000-0000-4000-8000-000000000099',
+      properties: { source: [['attachment:file:clip.webm']] }
+    },
+    [gifId]: {
+      id: gifId,
+      type: 'image',
+      space_id: spaceId,
+      properties: { source: [['attachment:file:demo.gif']] }
+    },
+    [coverPageId]: {
+      id: coverPageId,
+      type: 'page',
+      space_id: spaceId,
+      format: { page_cover: 'attachment:file:cover.gif' }
+    },
+    [externalCoverPageId]: {
+      id: externalCoverPageId,
+      type: 'page',
+      space_id: spaceId,
+      format: { page_cover: 'https://example.com/cover.gif' }
+    }
+  }
+  notion.getBlocks = (async (ids: string[]) => ({
+    recordMap: {
+      block: Object.fromEntries(ids.map((id) => [id, { value: blocks[id] }]))
+    }
+  })) as unknown as typeof notion.getBlocks
+  let signatures = 0
+  const expiresAt = Date.now() + 3_600_000
+  notion.getSignedFileUrls = (async (files: Array<{ url: string }>) => ({
+    signedUrls: files.map(
+      ({ url }) =>
+        `https://file.notion.com/f/f/${url.split(':').pop()}?expirationTimestamp=${expiresAt}&signature=${++signatures}`
+    )
+  })) as unknown as typeof notion.getSignedFileUrls
+  const get = async (id: string) => {
+    const response = new Response()
+    await notionFile(
+      {
+        method: 'GET',
+        query: { path: [id, 'upload', 'file.gif'] }
+      } as unknown as NextApiRequest,
+      response.api
+    )
+    return response
+  }
+  try {
+    await contentCache.invalidate()
+    const first = await get(videoId.replaceAll('-', ''))
+    assert.equal(first.statusCode, 307)
+    assert.match(first.headers.get('Location')!, /\/clip\.webm\?.*signature=1$/)
+    assert.match(
+      first.headers.get('Cache-Control')!,
+      /^public, max-age=(\d+), s-maxage=\1$/
+    )
+    const second = await get(videoId)
+    assert.equal(second.headers.get('Location'), first.headers.get('Location'))
+    assert.equal(signatures, 1)
+    assert.match((await get(gifId)).headers.get('Location')!, /\/demo\.gif\?/)
+    assert.match(
+      (await get(coverPageId)).headers.get('Location')!,
+      /\/cover\.gif\?/
+    )
+    assert.equal((await get(externalCoverPageId)).statusCode, 404)
+    assert.equal((await get(foreignVideoId)).statusCode, 404)
+    assert.equal((await get('not-a-block')).statusCode, 400)
+    assert.equal(signatures, 3)
+  } finally {
+    notion.getBlocks = originalGetBlocks
+    notion.getSignedFileUrls = originalGetSignedFileUrls
   }
 })

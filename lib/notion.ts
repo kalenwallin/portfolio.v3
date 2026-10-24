@@ -13,6 +13,8 @@ import {
   navigationStyle
 } from './config'
 import { notion } from './notion-api'
+import { getNotionFileUrl } from './notion-file-url'
+import { fileBlockTypes } from './notion-files'
 import { getPreviewImageMap } from './preview-images'
 
 const getNavigationLinkPages = pMemoize(
@@ -60,11 +62,16 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
   }
 
   // Signed file URLs expire within a day, but pages are only regenerated when
-  // Notion content changes. Render images from their permanent source instead,
-  // which mapImageUrl routes through Notion's image proxy.
+  // Notion content changes. Render images from their permanent source, which
+  // mapImageUrl routes through Notion's image proxy, and point other uploads at
+  // a route that redirects to a freshly signed URL.
   for (const blockId of Object.keys(recordMap.signed_urls ?? {})) {
-    if (getBlockValue(recordMap.block[blockId])?.type === 'image') {
+    const block = getBlockValue(recordMap.block[blockId])
+    const source = block?.properties?.source?.[0]?.[0]
+    if (block?.type === 'image') {
       delete recordMap.signed_urls[blockId]
+    } else if (block && fileBlockTypes.has(block.type) && source) {
+      recordMap.signed_urls[blockId] = getNotionFileUrl(blockId, source)
     }
   }
 

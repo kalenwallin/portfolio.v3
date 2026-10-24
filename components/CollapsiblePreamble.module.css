@@ -1,0 +1,72 @@
+/* Wide screens always show the full preamble */
+.toggleRow {
+  display: none;
+}
+
+@media only screen and (max-width: 920px) {
+  /* The first line in full, with the second fading out */
+  .collapsed {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  }
+
+  .toggleRow {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+.toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 1.25em;
+  color: var(--fg-color-2, rgba(55, 53, 47, 0.65));
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.toggle:hover {
+  color: var(--fg-color, rgb(55, 53, 47));
+  background: var(--fg-color-0, rgba(55, 53, 47, 0.04));
+}
+
+.toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.toggle svg {
+  transition: transform 200ms ease;
+}
+
+.expanded svg {
+  transform: rotate(180deg);
+}
+
+:global(.dark-mode) .toggle {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+:global(.dark-mode) .toggle:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle,
+  .toggle svg {
+    transition: none;
+  }
+}
