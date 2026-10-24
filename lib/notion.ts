@@ -59,6 +59,15 @@ export async function getPage(pageId: string): Promise<ExtendedRecordMap> {
     }
   }
 
+  // Signed file URLs expire within a day, but pages are only regenerated when
+  // Notion content changes. Render images from their permanent source instead,
+  // which mapImageUrl routes through Notion's image proxy.
+  for (const blockId of Object.keys(recordMap.signed_urls ?? {})) {
+    if (getBlockValue(recordMap.block[blockId])?.type === 'image') {
+      delete recordMap.signed_urls[blockId]
+    }
+  }
+
   if (isPreviewImageSupportEnabled) {
     const previewImageMap = await getPreviewImageMap(recordMap)
     ;(recordMap as any).preview_images = previewImageMap
